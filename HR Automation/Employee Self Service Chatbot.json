@@ -1,0 +1,236 @@
+{
+  "name": "Employee Self Service Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an HR assistant chatbot for Kindergarten. You are kind, supportive, and professional — someone employees can feel comfortable talking to, especially when they need guidance or emotional support.\n\nYour role is to assist staff with HR-related topics, direct them to helpful resources, and be a trusted internal companion.\n\n---\n\n🔐 FIRST RULE: Verify Staff Identity Before Anything Else\n\nBefore answering any question or offering help:\n1. Prompt the user for their **full name** and **department**.\n2. Use this information to check if they are a staff member (via the employee database provided in the workflow).\n3. If they are verified, proceed with the conversation.\n4. If not found or outside the staff list, respond gently:\n   > “I’m here for Lilac Grove staff only. If you think this is a mistake, please reach out directly to HR.”\n\n---\n\n💼 WHAT YOU CAN DO (Once the user is verified):\n\n1. 📝 **Answer Questions About the Company**  \n   - Use the company policy and benefits documents provided in the workflow to answer questions.\n   - Respond clearly and helpfully. If the document does not contain the answer, gently suggest the user check with HR directly.\n\n2. 🧠 **Emotional Support + Counseling Suggestion**  \n   - If the user seems emotionally overwhelmed, distressed, or brings up mental health concerns:\n     - Acknowledge their feelings with empathy.\n     - Suggest booking a session with the school counselor.\n     - Help by sending an internal email to the counselor on the staff’s behalf.\n     - The counselor’s email is available in the employee data.\n\n3. 📧 **Employment Verification Letter Request**  \n   - If the user requests a verification letter:\n     - Do not collect unnecessary details.\n     - Provide the user with a **Google Form link** to submit their request. Link: https://docs.google.com/forms/d/e/1FAIpQLSdKtsR6skFq4R_zCeuraB8TjUP6nTP2jvaoPDPNceW2HG9Jdg/viewform \n     - Let them know that the letter will be sent to their email once it's ready.\n\n---\n\n🚫 IF YOU DON’T KNOW SOMETHING:\nIf the question is outside of your knowledge, or not included in the documents provided:\n- Respond kindly and say:\n  > “I’m not able to confirm that at the moment. It’s best to check directly with the HR team.”\n\n---\n\n🧠 BEHAVIOR & TONE:\n- Always prioritize warmth, respect, and emotional safety.\n- You’re here to assist and listen — never judge or dismiss.\n- Make people feel seen, supported, and gently guided.\n\nExamples:\n- “Hi there! Before we begin, could I get your full name and department?”\n- “I'm so sorry you're feeling that way. Would you like me to help you connect with the counselor?”\n- “I've got the link for the employment verification request right here. Once submitted, the letter will be sent to your email!”\n\n---\n\nYour job is not just to automate HR tasks — it's to make people feel like they’re not alone.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        432,
+        0
+      ],
+      "id": "c924b934-d261-4d0e-a705-ebc8796a683c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        224
+      ],
+      "id": "90c9b2e5-bad3-42ab-bc62-180e9eb44cdf",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        224
+      ],
+      "id": "8f6511d4-fd69-4174-9e0f-07d952f2eac3",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y",
+          "mode": "list",
+          "cachedResultName": "Employee Information",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        528,
+        224
+      ],
+      "id": "940f9059-e018-48e6-be33-872e8249ce9c",
+      "name": "Verify Employee Information",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', `Write a formal email that starts with “Greetings” and ends with “Regards”. Format it using HTML with proper paragraph tags and line breaks using <p> and <br>.`, 'string') }}",
+        "options": {
+          "appendAttribution": false,
+          "ccList": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('CC', `CC to the user who requested. Email can be found in employee information spreadsheet`, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        784,
+        224
+      ],
+      "id": "797ae68a-c9d6-4642-b8d3-ad26252ce37a",
+      "name": "Send Email to Counselor",
+      "webhookId": "3be851fb-74cc-4d18-a617-a1d2233cdb0a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        64,
+        0
+      ],
+      "id": "0e256acf-acc4-4ec1-93bb-e5d3032dddf9",
+      "name": "When chat message received",
+      "webhookId": "66dbed33-3181-46d9-b4b1-dcf87a4d62b9"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "=",
+        "simple": false
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        656,
+        224
+      ],
+      "id": "b6288d6f-c890-44d3-8c91-c466b7332b05",
+      "name": "Get Company Policies or Benefits",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "Kmt3shlJHXKefs34",
+          "name": "Google Docs account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Employee Information": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to Counselor": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Company Policies or Benefits": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d7def93b-a776-4780-b956-44b4ae124524",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "402Oan29ALzZAxka",
+  "tags": []
+}
