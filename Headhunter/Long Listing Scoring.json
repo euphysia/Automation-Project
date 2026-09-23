@@ -1,0 +1,488 @@
+{
+  "name": "Long Listing Scoring",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "numberInputs": 3,
+        "useDataOfInput": 2
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        672,
+        16
+      ],
+      "id": "f59e66f3-3e8f-4d1b-97fc-7cf1ca6d56e4",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "formTitle": "Scoring",
+        "formDescription": "Upload the ICP for the position",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Position ICP",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        32
+      ],
+      "id": "717b3772-40b8-4f83-94af-91b940787185",
+      "name": "Form to Submit ICP",
+      "webhookId": "6f783d92-18c3-47b0-93ab-0480eb532f96"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Position_ICP",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -160
+      ],
+      "id": "ac5dd3da-3843-45ef-b795-5e2a645cd1bf",
+      "name": "Extract Text From ICP"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "18eKtudSdG4Gous8gq6-MGBvrKfNO8454e9Z0yoNSV_Y",
+          "mode": "list",
+          "cachedResultName": "Jobstreet Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18eKtudSdG4Gous8gq6-MGBvrKfNO8454e9Z0yoNSV_Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1067763494,
+          "mode": "list",
+          "cachedResultName": "Jobstreet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18eKtudSdG4Gous8gq6-MGBvrKfNO8454e9Z0yoNSV_Y/edit#gid=1067763494"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        32
+      ],
+      "id": "85451ca3-85f1-4302-9ff8-8a1794b78845",
+      "name": "Get Candidate Information",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JsOHR4QFDxOXSzrx1ERFIN-m1urSKC3NGeHlptoJIWU",
+          "mode": "list",
+          "cachedResultName": "Long List Scoring",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JsOHR4QFDxOXSzrx1ERFIN-m1urSKC3NGeHlptoJIWU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1167751587,
+          "mode": "list",
+          "cachedResultName": "Scoring Metric",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JsOHR4QFDxOXSzrx1ERFIN-m1urSKC3NGeHlptoJIWU/edit#gid=1167751587"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        224
+      ],
+      "id": "64bd56a8-06d6-4a1a-b33e-25c19f6ac564",
+      "name": "Get Scoring Metric",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "scoring",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        448,
+        224
+      ],
+      "id": "d7789aa6-34b6-4e49-97a0-3c6483f7322f",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=A candidate profile (Name, IC, Current Company, Product Worked On, Years of Experience, Salary Expectation).\n\n{{ $json.toJsonString() }}\n\nThe Ideal Candidate Profile (ICP), which describes the target job requirements.\n\n{{ $('Extract Text From ICP').first().json.text }}\n\nA Scoring Sheet containing evaluation criteria and weightages.\n{{ $('Aggregate').first().json.scoring.toJsonString()}}\n\nYour task is to:\n\nUse the Scoring Sheet as your official reference for all scoring decisions.\n\nFor each candidate, compare their data against the ICP according to the listed criteria and weights.\n\nCalculate a total score (0–10)\n\nWrite a short justification (1–2 sentences) explaining the key strengths or mismatches.\n\n\nEach criterion score should be on a scale of 0–10.\n\nThe score should be max 10.\n\n\n\nReturn the result in strict JSON format like this:\n{\n  \"Name\": \"...\",\n  \"score\": ...\n  \"Summary\":...\n}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        32
+      ],
+      "id": "234c038b-bc75-4db1-9bc8-dc7f4ea586a2",
+      "name": "Candidate Scoring Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"Name\": \"Hannah\",\n  \"score\": 9,\n  \"Summary\":\"He has enough experience. He is also hard working.\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        256
+      ],
+      "id": "5dc007e0-cd10-4237-9a02-d62d1bf9b7b5",
+      "name": "Format Output"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        256
+      ],
+      "id": "d6118bb6-6d7f-411d-9d04-0a1f1187637d",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "18eKtudSdG4Gous8gq6-MGBvrKfNO8454e9Z0yoNSV_Y",
+          "mode": "list",
+          "cachedResultName": "Jobstreet Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18eKtudSdG4Gous8gq6-MGBvrKfNO8454e9Z0yoNSV_Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1067763494,
+          "mode": "list",
+          "cachedResultName": "Jobstreet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18eKtudSdG4Gous8gq6-MGBvrKfNO8454e9Z0yoNSV_Y/edit#gid=1067763494"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Link to Profile": "={{ $('Merge').item.json['Link to Profile'] }}",
+            "Score": "={{ $json.output.score }}",
+            "Summary": "={{ $json.output.Summary }}"
+          },
+          "matchingColumns": [
+            "Link to Profile"
+          ],
+          "schema": [
+            {
+              "id": "Link to Profile",
+              "displayName": "Link to Profile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Career1",
+              "displayName": "Career1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Career2",
+              "displayName": "Career2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Expected Salary",
+              "displayName": "Expected Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Profile Update",
+              "displayName": "Last Profile Update",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last interaction",
+              "displayName": "Last interaction",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        32
+      ],
+      "id": "a0257b4b-596d-4193-ba2e-4423d1fae11e",
+      "name": "Update the Scoring and Reason",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Candidate Scoring Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form to Submit ICP": {
+      "main": [
+        [
+          {
+            "node": "Extract Text From ICP",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Candidate Information",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Scoring Metric",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text From ICP": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Candidate Information": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Scoring Metric": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Candidate Scoring Agent": {
+      "main": [
+        [
+          {
+            "node": "Update the Scoring and Reason",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Output": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Candidate Scoring Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Candidate Scoring Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "215db1e0-c2ca-4be3-9f5b-a117ce2a9650",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "UemUgpoVOusj2re8",
+  "tags": []
+}

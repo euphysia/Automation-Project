@@ -1,0 +1,595 @@
+{
+  "name": "Phishing Email/URL Detection",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "readStatus": "unread"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        192
+      ],
+      "id": "a42adca6-1edb-4439-a337-56009a7c6a52",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const email = $json;\n\n// Store extracted links\nlet links = [];\n\n// If email has HTML content\nif (email.textAsHtml) {\n  // Use regex to extract href values\n  const regex = /<a\\s+(?:[^>]*?\\s+)?href=([\"'])(.*?)\\1/gi;\n  let match;\n  while ((match = regex.exec(email.textAsHtml)) !== null) {\n    links.push(match[2]);\n  }\n}\n\n// Remove duplicates\nlinks = [...new Set(links)];\n\nreturn [\n  {\n    json: {\n      subject: email.subject || \"\",\n      from: email.from || \"\",\n      links: links,\n      linkCount: links.length\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        192
+      ],
+      "id": "c68b279a-e588-4964-b12b-298f04e65118",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://www.virustotal.com/api/v3/urls",
+        "authentication": "none",
+        "provideSslCertificates": false,
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json.links[0] }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Apikey",
+              "value": "50ed833657a9b400d29294f02c59bcd89e69be3c504978be0c3367422a10704d"
+            }
+          ]
+        },
+        "sendBody": false,
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        288,
+        480
+      ],
+      "id": "408e4023-b400-4f8c-a309-0682d008dbd7",
+      "name": "VirusTotal HTTP Request",
+      "extendsCredential": "virusTotalApi",
+      "credentials": {
+        "virusTotalApi": {
+          "id": "un7BIpAuNjuNnyoO",
+          "name": "VirusTotal account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "GET",
+        "": "",
+        "url": "=https://www.virustotal.com/api/v3/analyses/{{ $json.data.id }}",
+        "authentication": "none",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Apikey",
+              "value": "[YOUR API KEY]"
+            }
+          ]
+        },
+        "sendBody": false,
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        480
+      ],
+      "id": "b1b929bc-3890-4661-8201-2da812f147b2",
+      "name": "VirusTotal HTTP Request1",
+      "extendsCredential": "virusTotalApi",
+      "credentials": {
+        "virusTotalApi": {
+          "id": "un7BIpAuNjuNnyoO",
+          "name": "VirusTotal account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.text || $input.first().json.html || \"\";\nreturn [\n  {\n    json: {\n      email_body: body\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        -64
+      ],
+      "id": "721b6fba-0c8a-4a7d-bd9d-030d582547d5",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Makes an HTTP request to get phishing email example and compare.",
+        "url": "https://www.hooksecurity.co/phishing-email-examples",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        48
+      ],
+      "id": "9ffeb17d-8a54-4e2d-9739-f7b1dde3e309",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      url_scan_results: JSON.stringify($json, null, 2) // makes it readable\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        480
+      ],
+      "id": "3721a256-2d38-4a85-ae08-1dd9df737523",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = JSON.parse($input.first().json.message.content); // if your OpenAI response is in `data`\nreturn [ { json: data } ];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        192
+      ],
+      "id": "e66bb88b-a79f-4d7a-add8-a51f62d80319",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "content": "## Gmail Trigger\n\nThis workflow starts automatically when there is a new email. \n\n",
+        "height": 320,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        32
+      ],
+      "id": "bddefc42-4a0a-40db-953d-f968790c76c3",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## URL Checker\n\nCheck if there is URL in the email. ",
+        "height": 320,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        32
+      ],
+      "id": "4e95658d-db4f-4bfe-83be-07c344408cd6",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## URL Scanner\n\nAnalyze the URL using VirusTotal for potential threats and determine if the URL is safe to visit.",
+        "height": 336,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        352
+      ],
+      "id": "a4fb49d9-d3d1-4753-9f1f-f201c621e8ce",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a cybersecurity assistant that decides if an email and its links are safe.  \nYou will receive 2 types of information:  \n\n1. Email Content:\n---\n{{ $('Gmail Trigger').item.json.text }}\n---\n\n2. URL Scan Results:\n---\n{{ $json.url_scan_results }}\n---\n\nInstructions:\n- Analyze the email content for signs of phishing, scams, or suspicious language.  \n- Analyze the URL scan results for malicious domains, phishing, malware, or other warnings.  \n- Then decide if each (email and URL) is SAFE or SUSPICIOUS.  \n\nOutput your judgement in this exact structured format:\n\n{\n  \"Email_Content\": {\n    \"Verdict\": \"SAFE or SUSPICIOUS\",\n    \"Reason\": \"short explanation\"\n  },\n  \"URL\": {\n    \"Verdict\": \"SAFE or SUSPICIOUS\",\n    \"Reason\": \"short explanation\"\n  },\n  \"Final_Judgement\": \"SAFE or SUSPICIOUS\",\n  \"Summary\": \"overall conclusion in 1–2 sentences\"\n}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        960,
+        480
+      ],
+      "id": "7651401b-7afb-4398-bc75-1c07b693ff5b",
+      "name": "Cybersecurity Assistant",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "assistant",
+        "assistantId": {
+          "__rl": true,
+          "value": "asst_YZmMdLIp18dxhinAWZKjhRvw",
+          "mode": "list",
+          "cachedResultName": "Assist with output"
+        },
+        "prompt": "define",
+        "text": "=You are a cybersecurity assistant that analyzes emails for safety.  \n\nHere is the email content:\n---\n{{ $json.email_body }}\n---\n\nCan compare from external source by making http request.\n\nInstructions:\n1. Compare the email content with the scan results.  \n2. Decide if the email is SAFE or SUSPICIOUS.  \n3. If SAFE → explain briefly why.  \n4. If SUSPICIOUS → explain why, and highlight risky indicators (e.g., phishing language, malicious links, impersonation).  \n5. Output your judgement in this exact structured format:\n\n{\n  \"Email_Content\": {\n    \"Verdict\": \"SAFE or SUSPICIOUS\",\n    \"Reason\": \"short explanation\"\n  },\n\n  \"Final_Judgement\": \"SAFE or SUSPICIOUS\",\n  \"Summary\": \"overall conclusion in 1–2 sentences\"\n}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        864,
+        -176
+      ],
+      "id": "62b71f53-7e55-40f8-b0e0-df8171ae7f01",
+      "name": "Cyebersecurity Assistant 1",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "547691fd-1ff6-4e0f-b458-23dff9c5b3a4",
+              "leftValue": "={{ $json.Final_Judgement }}",
+              "rightValue": "SUSPICIOUS",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1600,
+        192
+      ],
+      "id": "b3aa2666-014f-4a75-9a1c-c2da35e60582",
+      "name": "If Suspicious Email"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "labelIds": [
+          "Label_8664851561884509416"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1856,
+        176
+      ],
+      "id": "373c6432-e532-4f25-9516-238150a41f27",
+      "name": "Add label to email",
+      "webhookId": "210ed0e3-2f2c-454e-8ad1-41fa3f482d71",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e4283ab9-df54-4b07-8d52-2abe4a92280f",
+              "leftValue": "={{ $json.linkCount }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        32,
+        192
+      ],
+      "id": "8eef8071-f2be-4503-b849-b58591877573",
+      "name": "If There is URL"
+    },
+    {
+      "parameters": {
+        "content": "## **Cybersecurity Assistant**\n\nThis node uses OpenAI (`gpt-4.1-mini`) to act as a **cybersecurity assistant**.  \nIt analyzes both the **email content** and the **URL scan results** to determine if the email is **SAFE** or **SUSPICIOUS**.\n\n",
+        "height": 432,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        912,
+        256
+      ],
+      "id": "cfe81b9a-1a74-44d1-b1a6-a8c8ad6ec415",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## **Cybersecurity Assistant Node**\n\nThis node uses OpenAI (`gpt-4.1-mini`) to act as a **cybersecurity assistant**.  \nIt analyzes the **email content** and refer to the phishing email examples to determine if the email is **SAFE** or **SUSPICIOUS**.\n\n",
+        "height": 528,
+        "width": 576
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        592,
+        -336
+      ],
+      "id": "fc894ef2-ee61-47af-8a11-ab3bbcb104f2",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Suspicious Email Label\n\nExtracts the `Final_Judgement` field from the AI’s output.  \n\nIf the email is flagged as SUSPICIOUS, a warning label will be applied. Otherwise, no action is taken.",
+        "height": 448,
+        "width": 752,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        0
+      ],
+      "id": "3adc8365-f09e-4771-aac9-8bd272168935",
+      "name": "Sticky Note5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "If There is URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VirusTotal HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "VirusTotal HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VirusTotal HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Cyebersecurity Assistant 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "Cyebersecurity Assistant 1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Cybersecurity Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "If Suspicious Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cybersecurity Assistant": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cyebersecurity Assistant 1": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Suspicious Email": {
+      "main": [
+        [
+          {
+            "node": "Add label to email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If There is URL": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "VirusTotal HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "042d5a51-3cbb-43b3-999b-f6c09d970a88",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "vzdvCnWuwW3pByhB",
+  "tags": [
+    {
+      "updatedAt": "2025-08-21T14:55:45.196Z",
+      "createdAt": "2025-08-21T14:55:45.196Z",
+      "id": "BqyBwlr8nimRdkva",
+      "name": "IT"
+    }
+  ]
+}

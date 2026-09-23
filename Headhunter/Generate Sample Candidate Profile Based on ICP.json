@@ -1,0 +1,221 @@
+{
+  "name": "Generate Sample Candidate Profile Based on ICP",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Sample Profile based on ICP",
+        "formDescription": "Submit the ICP here.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "ICP",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -208,
+        0
+      ],
+      "id": "e416c0f2-65c1-48ac-a0db-275f0f5a2399",
+      "name": "ICP Form Submission",
+      "webhookId": "2fed4119-12fb-40e8-a235-aff9881d2635"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "ICP",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        16,
+        0
+      ],
+      "id": "fc8b104d-6d3c-4de6-b98b-6ce0bd12d17e",
+      "name": "Extract Text from ICP"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        224
+      ],
+      "id": "37c7dc15-b0ec-42e4-8c14-600d4579d5f3",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.pdf.co/v1/pdf/convert/from/html",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "[Your PDF.co API Key]"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "Sample Profile"
+            },
+            {
+              "name": "html",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        592,
+        0
+      ],
+      "id": "ffce7e5e-3a11-410c-a9a2-7046d01a2276",
+      "name": "Generate Sample Candidate Profile PDF"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "2af6ce21-86a5-4a4d-b2ac-1a54a9e7f3cf",
+      "name": "Download Sample Candidate Profile PDF"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=You are an AI assistant for a headhunting firm. Your task is to generate sample candidate profiles in HTML format based on the provided Ideal Candidate Profile (ICP) data.\n\nThe generated profiles will be shown to clients during a validation meeting, so they must look realistic, well-written, and professionally structured.\n\n---\n\n### 🎯 Objective:\nUsing the ICP information provided (including Role & Compensation Overview, Candidate Qualifications, and Value Proposition), generate **three (3) distinct HTML sample candidate profiles** representing different experience tiers:\n1. **High-tier candidate** — Senior-level, multiple major projects, leadership or client-facing exposure, deeper technical depth.\n2. **Mid-tier candidate** — Experienced individual contributor, 2–4 notable projects, good skill range but limited leadership exposure.\n3. **Junior-tier candidate** — Entry-level or early-career, 1–2 small projects or internships, growing technical and soft skills.\n\nEach profile should reflect the same job scope and skills from the ICP, but vary naturally in seniority, project count, tone, and level of confidence.\n\n---\n\n### 🧱 Format Requirements:\nOutput in **HTML** only — do not include JSON or Markdown.\n\nEach profile must have a clean, minimal structure, following this layout:\n\n```html\n<div class=\"candidate-profile\">\n  <h2>[Candidate Name] — [Seniority Level]</h2>\n  <p><strong>Target Role:</strong> [Job Title]</p>\n  <p><strong>Summary:</strong> Short 2–3 sentence paragraph summarizing the candidate’s experience and suitability.</p>\n\n  <h3>Core Skills</h3>\n  <ul>\n    <li>Skill 1</li>\n    <li>Skill 2</li>\n    ...\n  </ul>\n\n  <h3>Project Experience</h3>\n  <div class=\"project\">\n    <strong>Project Name</strong> — short description of the work done, outcomes, and relevant technologies.\n  </div>\n  <div class=\"project\">\n    ...\n  </div>\n\n  <h3>Certifications / Education</h3>\n  <ul>\n    <li>Certification or Degree</li>\n  </ul>\n\n  <h3>Notable Strengths</h3>\n  <ul>\n    <li>Strength 1 (e.g., \"Strong client engagement and presentation skills\")</li>\n    <li>Strength 2</li>\n  </ul>\n</div>\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "476b387f-7e4b-4433-b9be-deadb2307ef1",
+      "name": "Generate Sample Candidate Profile"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "ICP Form Submission": {
+      "main": [
+        [
+          {
+            "node": "Extract Text from ICP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from ICP": {
+      "main": [
+        [
+          {
+            "node": "Generate Sample Candidate Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Sample Candidate Profile",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Sample Candidate Profile PDF": {
+      "main": [
+        [
+          {
+            "node": "Download Sample Candidate Profile PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Sample Candidate Profile PDF": {
+      "main": [
+        []
+      ]
+    },
+    "Generate Sample Candidate Profile": {
+      "main": [
+        [
+          {
+            "node": "Generate Sample Candidate Profile PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "98bfce5e-c2ce-4770-b637-0710f1a3baf9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "yJRmGTSayB2KZuHC",
+  "tags": []
+}

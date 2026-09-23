@@ -1,0 +1,497 @@
+{
+  "name": "OCR Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "OCR Documents/Image to GSheet",
+        "formDescription": "Read Documents/Image and Summarize in Google Sheet",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "data",
+              "fieldType": "file",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        32,
+        368
+      ],
+      "id": "9ea6dad9-0462-40c9-a09b-1b814f8d29a3",
+      "name": "On form submission",
+      "webhookId": "4b3d82c6-124d-401b-90b4-9dbb37af35a1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "=1TJGC0_bzFPhNhfMCPDZtMkVn2_DE7zW4-XQQIOcylxk",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TJGC0_bzFPhNhfMCPDZtMkVn2_DE7zW4-XQQIOcylxk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Company Name": "={{ $node[\"Information Extractor\"].json.output['Company Name'] }}",
+            "Company Registration Number": "={{ $node[\"Information Extractor\"].json.output['Company Registration Number'] }}",
+            "Name": "={{ $node[\"Information Extractor\"].json.output.Name }}",
+            "Email Address": "={{ $node[\"Information Extractor\"].json.output['Email Address'] }}",
+            "Business Description": "={{ $node[\"Information Extractor\"].json.output['Business Description'] }}",
+            "Position": "={{ $node[\"Information Extractor\"].json.output.Position }}",
+            "Sector": "={{ $node[\"Information Extractor\"].json.output.Sector }}",
+            "Country": "={{ $node[\"Information Extractor\"].json.output.Country }}",
+            "Contact Number": "={{ $node[\"Information Extractor\"].json.output['Contact Number'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Registration Number",
+              "displayName": "Company Registration Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Number",
+              "displayName": "Contact Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Address",
+              "displayName": "Email Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Business Description",
+              "displayName": "Business Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Position",
+              "displayName": "Position",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sector",
+              "displayName": "Sector",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1232,
+        384
+      ],
+      "id": "85178fbc-b07f-46cd-8d50-0a9ced1537ba",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "jsCode": "const binaries = $input.item.binary;\nconst output = [];\n\nfor (const key in binaries) {\n  output.push({\n    binary: {\n      data: binaries[key]\n    },\n    json: {\n      fileKey: key\n    }\n  });\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        368
+      ],
+      "id": "eeaa1cc3-7b8d-4efa-83a5-d38ce007f2e1",
+      "name": "Convert to Binary"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        464,
+        368
+      ],
+      "id": "5396f342-904d-4c39-9a80-967ce5927664",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "resource": "document",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "=extract the documents details in JSON\n\n",
+        "inputType": "binary",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        704,
+        384
+      ],
+      "id": "29ea755f-bed7-4900-bb6f-e2044340195a",
+      "name": "Analyze document",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2Nqtm41mGKFGoLwh",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        896,
+        608
+      ],
+      "id": "96ec394f-014a-45e4-a449-8d38d5c46f44",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "content": "## Upload the PDF or image file to have it processed and prepared for looping",
+        "height": 400,
+        "width": 592
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        208
+      ],
+      "id": "858a90b9-deab-4d4b-a749-4ebaf058be9d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Send the files to Gemini AI for OCR and data extraction\n\nThe Information Extractor Node allows customization of the elements to be extracted",
+        "height": 528,
+        "width": 528,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        624,
+        208
+      ],
+      "id": "3f465ad2-746d-4057-a770-2e9727c9e8d4",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Field Mapping to Google Sheet\n\nCreate a Google Sheet and map its column headers to the Information Extractor Node",
+        "height": 400,
+        "width": 256,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        208
+      ],
+      "id": "60b8170f-5336-4a79-9c7b-a360fa33b08a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Prerequisites for this workflow\n\n### Google Sheet with expected output column\n### Gemini API key\n### PDF or Image Files of bills",
+        "height": 192,
+        "width": 592,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3f85eb89-be29-4e06-ab2e-7fccfb804706",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "text": "={{ $node[\"Analyze document\"].json.candidates[0].content.parts[0].text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Company Name",
+              "description": "The Name of the Company"
+            },
+            {
+              "name": "Company Registration Number",
+              "description": "Company Registration Number, usually beside or below the Company Name"
+            },
+            {
+              "name": "Company Address",
+              "description": "Company Address"
+            },
+            {
+              "name": "Name",
+              "description": "Name of the Person"
+            },
+            {
+              "name": "Contact Number",
+              "description": "Contact number of the person, usually is a mobile number, if no mobile number can be found, then use land  line. If the number contain \"-\", please remove  it"
+            },
+            {
+              "name": "Email Address",
+              "description": "email address of the individual, rather than a generic company email"
+            },
+            {
+              "name": "Business Description",
+              "description": "Description of the business based on the overall understanding obtained from name card"
+            },
+            {
+              "name": "Position",
+              "description": "Position of the individual with the Company"
+            },
+            {
+              "name": "Sector",
+              "description": "Categorize into the following Sector:\n1. Company\n2. Associations\n3. Banks\n4. Government"
+            },
+            {
+              "name": "Country",
+              "description": "Country of the address (ie, Malaysia, Singapore, China, Taiwan)"
+            },
+            {
+              "name": "State",
+              "description": "State of address (ie. Singapore, Johor, Selangor, Kuala Lumpur or the area before the country in the address)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        384
+      ],
+      "id": "645b33f3-4c1c-408f-b59d-5c5a6ed49ac6",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Email Address'] }}",
+        "subject": "Pleasure to meet at the event today",
+        "message": "=Dear {{ $json.Name }}\n\n<br><br>It was a pleasure meeting you at the event today.\n<br><br>My firm is offering full suite of n8n AI Automation training and project consultation.\n<br><br>If you are interested to explore more, feel free to contact me.\n<br><br>Cheers<br>\nSupern8n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1488,
+        384
+      ],
+      "id": "d7945410-b8c2-46ef-81dd-116975bffbf9",
+      "name": "Send a message",
+      "webhookId": "a595bdb0-3822-4078-9a78-364eb07f0917"
+    },
+    {
+      "parameters": {
+        "content": "## Customized Message in Email\n\nCustomize email content with variable contents generated from previous node",
+        "height": 400,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        208
+      ],
+      "id": "6a67653d-136a-48a0-ad47-bbd18f6014b2",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Convert to Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Binary": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Analyze document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze document": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ebfefea6-208c-4a5c-8336-7b0623cc8656",
+  "meta": {
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "oEVAaJuJYOIZ1MbO",
+  "tags": []
+}

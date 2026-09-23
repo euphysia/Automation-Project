@@ -1,0 +1,241 @@
+{
+  "name": "Convert Schedule Image to Google Calendar",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Schedule to Google Calendar Converter",
+        "formDescription": "Sync your schedule to Google Calendar.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Your Schedule",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".jpg, .png, .pdf",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "start_date",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Repeat Until When?",
+              "fieldType": "date",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -368,
+        624
+      ],
+      "id": "e8f23df4-415f-49dd-93db-741d289d3b47",
+      "name": "Submit Schedule as Image",
+      "webhookId": "3bee9f9d-0c93-4f6f-8605-7a897c571875"
+    },
+    {
+      "parameters": {
+        "documentType": "image_url",
+        "binaryProperty": "Your_Schedule",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mistralAi",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        624
+      ],
+      "id": "f6b39058-cc73-43be-9519-5d895193f055",
+      "name": "Extract Schedule as Text",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "5m5938xlwd05hNFP",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "assistant",
+        "assistantId": {
+          "__rl": true,
+          "value": "asst_YZmMdLIp18dxhinAWZKjhRvw",
+          "mode": "list",
+          "cachedResultName": "Assist with output"
+        },
+        "prompt": "define",
+        "text": "=Read the given schedule text ({{ $json.extractedText }}). \nReturn ALL classes, not just the first one.  \nIf there are multiple classes on the same day, list them separately. \n\nOnly return valid JSON. Do not include explanations or text outside the array. and delete duplicate.\n\nYou are a scheduling assistant. \nYou will receive a list of schedule entries in JSON format, each containing: \n- day (e.g. \"Monday\") \n- subject \n- start_time \n- end_time\n- location\n\nYour task:\n1. Map the day of the week to a calendar date based on the given semester start date : {{ $('Submit Schedule as Image').item.json.start_date }}.\n2. Keep all attributes exactly as they are, only add two new fields for each entry:\n   - start_datetime (full ISO 8601 format with date + start_time)\n   - end_datetime (full ISO 8601 format with date + end_time)\n3. Output must remain valid JSON. Do not summarize, rephrase, or add text outside of the JSON.\n4. Always return an array of JSON objects, one for each subject entry.\n\nFormat output as a JSON array:\n[\n  {\n    \"day\": \"Monday\",\n    \"subject\": \"Mathematics\",\n    \"start_time\": \"08:00\",\n    \"end_time\": \"09:30\",\n    \"location\": \"CN04\"\n    \"start_datetime\" : \"(full ISO 8601 format with date + start_time)\"\n    \"end_datetime\" : \"(full ISO 8601 format with date + end_time)\"\n  },\n  {\n    \"day\": \"Monday\",\n    \"subject\": \"Physics\",\n    \"start_time\": \"10:00\",\n    \"end_time\": \"11:30\",\n    \"location\": \"CN03\"\n    \"start_datetime\" : \"(full ISO 8601 format with date + start_time)\"\n    \"end_datetime\" : \"(full ISO 8601 format with date + end_time)\"\n  }\n]\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        80,
+        624
+      ],
+      "id": "a5329370-4bf1-4620-a3fd-d4a8ccac91c9",
+      "name": "Parse Raw Schedule",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Step 1: Get the raw string from OpenAI\nlet raw = $json.output || \"\";\n\n// Step 2: Parse the string inside \"output\"\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);   // this turns it into a real array\n} catch (e) {\n  throw new Error(\"Could not parse OpenAI output: \" + raw);\n}\n\n// Step 3: Return as n8n items\nreturn parsed.map(item => ({ json: item }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        624
+      ],
+      "id": "aa0dfea5-792c-4cab-af86-1e706bb76d42",
+      "name": "Format Schedule for Google Calendar"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "start": "={{ $json.start_datetime }}",
+        "end": "={{ $json.end_datetime }}",
+        "additionalFields": {
+          "location": "={{ $json.location }}",
+          "repeatFrecuency": "weekly",
+          "repeatUntil": "={{ $('Submit Schedule as Image').item.json['Repeat Until When?'] }}",
+          "summary": "={{ $json.subject }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        624
+      ],
+      "id": "103e5bf4-3687-42a3-85fb-20d6d343ae95",
+      "name": "Create Events Based on Schedule",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "KNzynBxeY6th9gHP",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Form Trigger: Submit Schedule as Image\n\nStarts when a user submits their **schedule** using a form.\n\nSync your school schedule to Google Calendar.  \n\n### Fields\n1. **Your Schedule (File Upload)**  \n2. **Start Date** \n3. **Repeat Until When?**  \n\n\nThe workflow will process the data and sync it into **Google Calendar**\n",
+        "height": 624,
+        "width": 288,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        192
+      ],
+      "id": "1708fe15-d8b7-4368-80aa-b3e03850561a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Schedule Extraction & Parsing Workflow\n\nExtracts a class schedule from an image and converts it into structured JSON with proper ISO datetime fields.\n\n### 1. Extract Schedule as Text using MistralAI\n\n### 2. Parse Raw Schedule\nRead the extracted schedule text and format it accordingly.",
+        "height": 512,
+        "width": 512
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        304
+      ],
+      "id": "b1468023-dafd-4f84-8bc8-174142e4ece0",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Schedule to Google Calendar\n\nTakes a parsed schedule (from OpenAI or other input), formats it, and creates recurring Google Calendar events.\n\n### 1. **Format Schedule for Google Calendar**\nParses the raw JSON output from OpenAI into structured n8n items for each event.\n\n### 2. Create events in Google Calendar based on the structured schedule.\n",
+        "height": 512,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        368,
+        304
+      ],
+      "id": "30706a7f-f6d8-4f80-83b5-cc96123ac68b",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Submit Schedule as Image": {
+      "main": [
+        [
+          {
+            "node": "Extract Schedule as Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Schedule as Text": {
+      "main": [
+        [
+          {
+            "node": "Parse Raw Schedule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Raw Schedule": {
+      "main": [
+        [
+          {
+            "node": "Format Schedule for Google Calendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Schedule for Google Calendar": {
+      "main": [
+        [
+          {
+            "node": "Create Events Based on Schedule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "065a03fe-c608-4909-ab68-ac7de6ffbd25",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "m1JAlbesjKOVyeaH",
+  "tags": []
+}

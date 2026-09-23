@@ -1,0 +1,330 @@
+{
+  "name": "Database Query AI Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        224
+      ],
+      "id": "0f1c4305-6b9f-408b-90e4-77863e50319f",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message?.from?.id || $json.user?.id || $json.sessionId || 'default-session' }}",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        224
+      ],
+      "id": "89628dda-821d-41cb-ac40-06d1f7a16c55",
+      "name": "Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1NIcAOXhykrpJgwVt864xylczNFEeKyKb9KxQRRVSllo",
+          "mode": "list",
+          "cachedResultName": "Hartamas Test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NIcAOXhykrpJgwVt864xylczNFEeKyKb9KxQRRVSllo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NIcAOXhykrpJgwVt864xylczNFEeKyKb9KxQRRVSllo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        208,
+        224
+      ],
+      "id": "6b58f269-4b65-4d46-a149-e9cf258b9854",
+      "name": "Google Sheet Database",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1NIcAOXhykrpJgwVt864xylczNFEeKyKb9KxQRRVSllo",
+          "mode": "list",
+          "cachedResultName": "Hartamas Test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NIcAOXhykrpJgwVt864xylczNFEeKyKb9KxQRRVSllo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1489621382,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NIcAOXhykrpJgwVt864xylczNFEeKyKb9KxQRRVSllo/edit#gid=1489621382"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone Number",
+              "lookupValue": "={{ $json.messages[0].from }}"
+            },
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "allowed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -480,
+        240
+      ],
+      "id": "f78d6dac-9c45-422d-b12e-67b14d9bd405",
+      "name": "Verify Number",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('WhatsApp Trigger').item.json.messages[0].text.body }}",
+        "options": {
+          "systemMessage": "=You are an AI assistant for querying database.  \nYour role is to help verified agents search the internal database stored in Google Sheets.\n\n---\n\n### Search Rules:\n- Users may provide one or more search inputs.  \n- The allowed inputs are:  \n  • Name  \n  • Phone Number  \n  • IC Number  \n  • Address (partial keyword matches are allowed).  \n- Always search using only the information the user provides.  \n- Never ask the user to provide all fields.  \n\n---\n\n### Behavior:\n\n1. When the user provides a query, search the Google Sheets database using ONLY the fields they gave.  \n\n2. **If multiple matches are found:**  \n   - Output **all matches** in full structured format (never show just one).  \n   - Use the following format for every record:  \n\nClient Name: [Name]\nPhone: [Phone]\nIC: [IC]\nAddress: [Address]\nProperty Link: [Link]\nStatus: [Status]\n\n- Separate each record with a divider line `---`  \n- After listing, always ask:  \n  \"Do you mean one of these records? Please confirm which one.\"  \n\n3. **If exactly one match is found:**  \n- Return the record in the same structured format.  \n\n4. **If no records are found:**  \n- Reply:  \n  \"Sorry, I couldn’t find any records that match your query. Please try again with a name, phone, IC, or address keyword.\"  \n\n5. **If the input is not a query (random or unrelated):**  \n- Reply:  \n  \"I’m your query assistant, and I can only help you search the client database. Please provide a name, phone, IC, or address keyword to begin.\"  \n\n---\n\n### Important Rules:\n- Always output **all matches** when more than one record is found. Never show only one example.  \n- Always use the same structured format per record.  \n- Confirm with the user before finalizing when multiple matches exist.  \n- Never guess, summarize, or invent data.  \n- Keep responses clear, professional, and concise.  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        0,
+        0
+      ],
+      "id": "421b78a6-f99d-4aed-9eb6-e4512a8ca5fc",
+      "name": "Query Agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4b0a4e76-72fc-4ee4-9e76-261fa74b346a",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -256,
+        240
+      ],
+      "id": "e566d085-a5a0-4362-bc8b-6cfa88cd4b13",
+      "name": "If Verified"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "720760944456870",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "=Sorry, your number is not authorized to access this service.\nIf you believe this is a mistake, please contact our support team at:   \n\nsupport@realestateagency.com   \n+6012-3456789",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        80,
+        400
+      ],
+      "id": "5fd68f80-5e97-4376-b546-60f147d6072d",
+      "name": "Send Service Restriction Message",
+      "webhookId": "68da2df1-e72d-4576-a44b-14ee8e95f967"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "720760944456870",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        416,
+        112
+      ],
+      "id": "70c44da0-3c86-4006-a7d2-d8094ff887c8",
+      "name": "Send Back the Required Informations",
+      "webhookId": "9a3a09c5-444a-4ce2-9dc3-ae3c7fbb4234"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        240
+      ],
+      "id": "f9212be8-609e-4f22-a7ce-71a5b30c62a0",
+      "name": "WhatsApp Trigger",
+      "webhookId": "68783f2d-0ae4-4020-9d78-cf64c5cf6797",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "jBTjpfVH4Fxtdn9u",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Query Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Query Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheet Database": {
+      "ai_tool": [
+        [
+          {
+            "node": "Query Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Number": {
+      "main": [
+        [
+          {
+            "node": "If Verified",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Back the Required Informations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Verified": {
+      "main": [
+        [
+          {
+            "node": "Query Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Service Restriction Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Verify Number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "51743c4d-4868-4868-84f1-8fc11de9bdcc",
+  "meta": {
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "a5zSgsyiK67JFJ85",
+  "tags": []
+}

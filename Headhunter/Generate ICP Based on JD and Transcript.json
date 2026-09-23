@@ -1,0 +1,481 @@
+{
+  "name": "Generate ICP Based on JD and Transcript",
+  "nodes": [
+    {
+      "parameters": {
+        "toolDescription": "Makes an HTTP request to get additional information",
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "[Your SerpApi Key]"
+            },
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', ``, 'string') }}"
+            },
+            {
+              "name": "safe",
+              "value": "off"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        48,
+        368
+      ],
+      "id": "acfb303f-c32f-47ab-9cb4-83636557dc50",
+      "name": "Get Additional Information"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "output": "empty"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -256,
+        144
+      ],
+      "id": "06cb9d29-e833-48fc-aa4b-d58fc139530e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "HR_Transcript",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        48
+      ],
+      "id": "9d5d1d76-cb24-425b-abc8-40aae5cdc19f",
+      "name": "Extract from Transcript"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Job_Description",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        240
+      ],
+      "id": "1b459d9e-b606-44a4-b166-0fcae6555bfa",
+      "name": "Extract from JD"
+    },
+    {
+      "parameters": {
+        "formTitle": "JD and HR Call Transcript",
+        "formDescription": "Paste HR Call transcript and Job Description here.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Job Description",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "HR Transcript",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -704,
+        144
+      ],
+      "id": "98006f9d-f9c3-4716-a060-f26d55f3ff85",
+      "name": "JD and Transcript Form Submission",
+      "webhookId": "79af40ca-831b-4183-ab9c-86b39d672df6"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=🧠 System Message (Final Version)\n\nYou are an AI assistant helping a headhunting firm summarize and extract hiring details from a given Job Description and Transcript.\n\nJob Description:\n{{ $('Extract from JD').first().json.text }}\n\nTranscript:\n{{ $('Extract from Transcript').item.json.text }}\n\nYour goal is to extract, summarize, and format all information needed by recruiters to prefill an Ideal Candidate Profile (ICP).\n\nFollow this structure and logic carefully:\n\n🪜 Step-by-step Logic\n\nStep 1️⃣ — Extraction:\nExtract information directly from the job description and transcript.\nIf there is conflicting information, always prioritize the transcript.\n\nStep 2️⃣ — Enrichment:\nIf relevant information is missing, perform an HTTP request to gather additional details such as:\n\nSalary benchmarks for the role in that region\n\nHiring manager LinkedIn profile\n\nCommon or relevant skills for that job title\n\nTypical companies where candidates for that role come from\n\nCommon screening questions\n\nStep 3️⃣ — Fallback:\nIf, after enrichment, no relevant information is found, leave the field empty.\n\nStep 4️⃣ — Output:\nReturn the result strictly in JSON format with the following structure — no commentary, no markdown, and no extra text.\n\n📄 Output Format (Strict JSON)\n{\n  \"Section 1: Basic Details of the Role\": {\n    \"Job Title\": \"\",\n    \"Client Name\": \"\",\n    \"Hiring Manager\": {\n      \"Name\": \"\",\n      \"LinkedIn\": \"\"\n    },\n    \"Number of Vacancies\": \"\",\n    \"Basic Salary and Others\": \"\",\n    \"Client's View on Salary Value\": \"\",\n    \"Official Working Hours\": \"\",\n    \"Job Description\": \"\"\n  },\n  \"Section 2: Candidate Qualifications (The Core “who” to Find & Filter)\": {\n    \"Mandatory Requirements\": {\n      \"Skills\": []\n    },\n    \"Nice To Haves\": {\n      \"Valuable Additional Skill\": [],\n      \"Preferred Industry or Company Types\": []\n    },\n    \"Screening Questions\": []\n  },\n  \"Section 3: Client & Role Value Proposition (For AI Marketing & Outreach)\": {\n    \"Value Proposition\": [\n      \"reason 1\",\n      \"reason 2\",\n      \"reason 3\"\n    ],\n    \"Target Companies where the right candidates might be from\": {\n      \"Tier 1\": [],\n      \"Tier 2\": [],\n      \"Companies to avoid\": {\n        \"List\": [],\n        \"Summary\": \"\"\n      }\n    },\n    \"Key Search Terms and Job Titles\": {\n      \"Relevant Job Titles\": [],\n      \"Keywords\": [],\n      \"Companies to avoid\": []\n    },\n    \"Past Search History (If applicable)\": {\n      \"How long has the position been open?\": \"\",\n      \"Key Challenges in past searches?\": \"\",\n      \"Why is this role opened?\": \"\",\n      \"Who is the main decision maker for this role?\": \"\"\n    }\n  }\n}\n\n🧩 Guidelines\n\nBe concise, accurate, and structured.\n\nStack-rank skills (most important first).\n\nValue Proposition should summarize why strong candidates would want to work in this role (3–5 clear reasons).\n\nFor Screening Questions, generate 3–5 smart, relevant questions:\n\nIf missing, do an HTTP request for common or contextual screening questions for that role.\n\nIf unavailable even after search, leave the list empty.\n\nFor Companies to avoid, do a brief HTTP request-based market scan:\n\nList 2–4 companies that are poor fits (e.g., due to conflicting business models, talent retention issues, or skill mismatch).\n\nInclude a short summary explaining why they should be avoided.\n\nIf no relevant data is found even after enrichment, return fields as empty strings or empty arrays.\n\nFor Keywords:\n\nAutomatically extract and generate a list of 10–20 relevant search terms, tools, and technologies that recruiters typically use for this role.\n\nIf unclear, perform an HTTP request to identify the most common technical and domain keywords for similar job titles in the market.\n\nThe output must be an array of concise search terms, not sentences.\n\nFormat the output so its easy to plug into google docs to replace placeholder."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -32,
+        144
+      ],
+      "id": "f176b450-bb48-456e-83a6-103f6c51f458",
+      "name": "Summarise and Extract",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1Rsbu94uYSlvHDXmWz5gU9s0BvI6ORCIkJULMoCPSr04",
+          "mode": "list",
+          "cachedResultName": "ICP Template",
+          "cachedResultUrl": "https://docs.google.com/document/d/1Rsbu94uYSlvHDXmWz5gU9s0BvI6ORCIkJULMoCPSr04/edit?usp=drivesdk"
+        },
+        "name": "=ICP_{{ $json.message.content['Section 1: Basic Details of the Role']['Client Name'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        320,
+        144
+      ],
+      "id": "2ee6ed3f-5d25-4d68-b625-8dd072674864",
+      "name": "Copy ICP Template",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "fv7f4nSTlqNNDBOF",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Summarise and Extract').item.json.message.content }}",
+        "options": {
+          "systemMessage": "=🧠 System Message for AI Agent (Google Docs Placeholder Replacement)\n\nYou are an AI document-filling assistant. Your job is to accurately replace placeholders wrapped in square brackets [] within a Google Docs template using the structured JSON information provided to you.\n\nThe input will contain multiple sections and arrays (e.g., skills, questions, company lists). You must interpret them correctly and format them in clear, professional English.\n\n🔧 Instructions\n\nYou will receive:\n\nA Google Docs template with placeholders (e.g., [Job Title], [Mandatory Requirements], [Tier 1 Companies]).\n\nA structured JSON input containing detailed information about a job position.\n\nFor each placeholder:\n\nFind the matching field from the JSON and replace it in the document.\n\nIf the field contains an array, convert it into a clean, readable list (either bullet points or comma-separated, depending on context).\n\nIf the placeholder’s corresponding value has nested data, handle it gracefully by maintaining logical structure (e.g., grouping under relevant headings).\n\nIf a placeholder does not exist in the JSON, leave it unchanged in the document.\n\nPreserve all document formatting, line breaks, and indentation from the Google Doc. Do not add extra commentary or JSON text in the output.\n\nExample formatting rules:\n\nArrays of items (e.g., Skills, Questions, Value Proposition):\n→ Convert to bullet lists (• item1, • item2, • item3)\n\nInline items (e.g., Keywords, Job Titles):\n→ Convert to comma-separated text.\n\nNested objects (e.g., “Hiring Manager → Name”):\n→ Replace [Hiring Manager Name] with the value.\n\nWhen replacing, handle both singular and plural placeholders.\nExample:\n\n[Skill] → First skill item\n\n[Skills] → Full list of all skills formatted properly\n\n🧩 Example Behavior\n\nIf the template has:\n\nJob Title: [Job Title]\nKey Skills: [Skills]\nValue Proposition:\n[Value Proposition]\nKeywords: [Keywords]\n\n\nand the JSON says:\n\n{\n  \"Job Title\": \"SOC Manager\",\n  \"Skills\": [\"Incident Response\", \"Threat Detection\", \"EDR\", \"SOAR\"],\n  \"Value Proposition\": [\n    \"Lead a talented SOC team.\",\n    \"Work across diverse industries.\",\n    \"Competitive compensation package.\"\n  ],\n  \"Keywords\": [\"SOC\", \"SIEM\", \"XDR\", \"Cybersecurity\"]\n}\n\n\nYou should produce:\n\nJob Title: SOC Manager\nKey Skills:\n• Incident Response\n• Threat Detection\n• EDR\n• SOAR\n\nValue Proposition:\n• Lead a talented SOC team.\n• Work across diverse industries.\n• Competitive compensation package.\n\nKeywords: SOC, SIEM, XDR, Cybersecurity\n\n⚠️ Important Rules\n\nNever output raw JSON or code.\n\nNever invent or assume missing data.\n\nEnsure arrays and nested objects are fully expanded into readable lists.\n\nAlways prioritize readability and context accuracy.\n\nSKILLS AND VALUABLE ADDITIONAL SKILL ARE 2 DIFFERENT THING"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        544,
+        144
+      ],
+      "id": "310e2ddf-58d1-44bd-bf01-034ef5669cfa",
+      "name": "ICP Doc Placeholder Replacement"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        368
+      ],
+      "id": "f9bbf7db-5bf9-44d6-8a3e-9e75cb15aacd",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "[Job Title]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 1: Basic Details of the Role']['Job Title'] }}",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Client Name]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 1: Basic Details of the Role']['Client Name'] }}",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Hiring Manager]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 1: Basic Details of the Role']['Hiring Manager'].Name + \"\"}} {{ $('Summarise and Extract').item.json.message.content['Section 1: Basic Details of the Role']['Hiring Manager'].LinkedIn }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Number of Vacancies]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 1: Basic Details of the Role']['Number of Vacancies'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Basic Salary and Others]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 1: Basic Details of the Role']['Basic Salary and Others'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Client's View on Salary Value]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 1: Basic Details of the Role']['Client\\'s View on Salary Value'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Official Working Hours]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 1: Basic Details of the Role']['Official Working Hours'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Job Description]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 1: Basic Details of the Role']['Job Description'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Skills]",
+              "replaceText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields8_New_Text', ``, 'string') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Valuable Additional Skill]",
+              "replaceText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields9_New_Text', ``, 'string') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Preferred Industry or Company Types]",
+              "replaceText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields10_New_Text', ``, 'string') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Screening Questions]",
+              "replaceText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields11_New_Text', ``, 'string') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Value Proposition]",
+              "replaceText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields12_New_Text', ``, 'string') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Tier]",
+              "replaceText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields13_New_Text', ``, 'string') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Tier 2]",
+              "replaceText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields14_New_Text', ``, 'string') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Companies to avoid]",
+              "replaceText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields15_New_Text', ``, 'string') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Relevant Job Titles]",
+              "replaceText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields16_New_Text', ``, 'string') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Keywords]",
+              "replaceText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields17_New_Text', ``, 'string') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Companies to avoid]",
+              "replaceText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields18_New_Text', ``, 'string') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[How long has the position been open?]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 3: Client & Role Value Proposition (For AI Marketing & Outreach)']['Past Search History (If applicable)']['How long has the position been open?'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Key Challenges in past searches?]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 3: Client & Role Value Proposition (For AI Marketing & Outreach)']['Past Search History (If applicable)']['Key Challenges in past searches?'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Why is this role opened?]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 3: Client & Role Value Proposition (For AI Marketing & Outreach)']['Past Search History (If applicable)']['Why is this role opened?'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Who is the main decision maker for this role?]",
+              "replaceText": "={{ $('Summarise and Extract').item.json.message.content['Section 3: Client & Role Value Proposition (For AI Marketing & Outreach)']['Past Search History (If applicable)']['Who is the main decision maker for this role?'] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        720,
+        368
+      ],
+      "id": "1175c4d4-2648-4882-b94a-72219ef01c88",
+      "name": "Replace Placeholder",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "Kmt3shlJHXKefs34",
+          "name": "Google Docs account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Additional Information": {
+      "ai_tool": [
+        [
+          {
+            "node": "Summarise and Extract",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Summarise and Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from Transcript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from JD": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "JD and Transcript Form Submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from Transcript",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract from JD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarise and Extract": {
+      "main": [
+        [
+          {
+            "node": "Copy ICP Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy ICP Template": {
+      "main": [
+        [
+          {
+            "node": "ICP Doc Placeholder Replacement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ICP Doc Placeholder Replacement",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Placeholder": {
+      "ai_tool": [
+        [
+          {
+            "node": "ICP Doc Placeholder Replacement",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "96c0e7e2-7a96-42f9-953a-b57748987616",
+  "meta": {
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "OYF7mCmdhSQCe7CY",
+  "tags": []
+}

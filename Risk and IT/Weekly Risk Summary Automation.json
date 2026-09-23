@@ -1,0 +1,547 @@
+{
+  "name": "Weekly Risk Summary Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        32,
+        96
+      ],
+      "id": "8ddb5608-ff37-4103-a315-9acbc22e9b2d",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        304,
+        320
+      ],
+      "id": "a4a179a7-80cd-4887-b32b-af78a7e2a7f2",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "[Your CRO Email]",
+        "subject": "=Risk Summary Report – [Week Ending {{ $json.todayFormatted }}] ",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false,
+          "ccList": "[Your Risk Management Team Email]"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        928,
+        96
+      ],
+      "id": "76f06002-6ba5-4c90-a37c-cf7f1a69ce9b",
+      "name": "Send Risk Register Summary Email",
+      "webhookId": "9e696b48-6253-40b8-87fe-553a8ddddc9f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const now = new Date();\n  const todayFormatted = now.toLocaleDateString(); // e.g., \"9/26/2025\"\n\n  return {\n    json: {\n      ...item.json,\n      todayFormatted\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        96
+      ],
+      "id": "9a35acef-588d-4698-8f97-7b5d985f6cef",
+      "name": "Format Date"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "options": {
+          "systemMessage": "=You are a Risk Management Assistant.\nYour task is to summarize risk register data into a weekly dashboard report.\n\nFormatting Rules:\n\nOutput only valid HTML (no Markdown, no extra text or commentary).\n\nFollow the exact structure and section order below.\n\nReplace all placeholder values (X) with real values from the JSON input.\n\nHTML must be clean, styled, and ready for email or dashboard display.\n\nUse soft colors, spacing, and bold text for readability — no external CSS, only inline <style>.\n\nHTML Output Template:\n\n<html>\n<head>\n  <style>\n    body {\n      font-family: 'Segoe UI', Arial, sans-serif;\n      color: #333;\n      margin: 20px;\n    }\n    h2 {\n      color: #1a237e;\n      border-bottom: 2px solid #e0e0e0;\n      padding-bottom: 5px;\n    }\n    ul, ol {\n      margin: 10px 0 20px 25px;\n    }\n    li {\n      margin-bottom: 6px;\n    }\n    .summary-box {\n      background: #f4f6ff;\n      border: 1px solid #d1d9ff;\n      border-radius: 8px;\n      padding: 10px 15px;\n      margin-bottom: 20px;\n    }\n    .risk-list {\n      background: #fafafa;\n      border: 1px solid #ddd;\n      border-radius: 6px;\n      padding: 10px 15px;\n      margin-bottom: 15px;\n    }\n  </style>\n</head>\n<body>\n\n  <h2>Weekly Risk Summary</h2>\n  <div class=\"summary-box\">\n    <ul>\n      <li><strong>Total Risks Submitted:</strong> X</li>\n      <li><strong>High:</strong> X | <strong>Medium:</strong> X | <strong>Low:</strong> X</li>\n      <li><strong>Pending:</strong> X | <strong>Mitigated:</strong> X | <strong>Resolved:</strong> X</li>\n    </ul>\n  </div>\n\n  <h2>Top 3 Risks</h2>\n  <ol class=\"risk-list\">\n    <li><strong>Risk Title</strong> (Score: X, Severity: X, Owner: X, Status: X)</li>\n    <li><strong>Risk Title</strong> (Score: X, Severity: X, Owner: X, Status: X)</li>\n    <li><strong>Risk Title</strong> (Score: X, Severity: X, Owner: X, Status: X)</li>\n  </ol>\n\n  <h2>Pending High Severity Risks</h2>\n  <ul class=\"risk-list\">\n    <li><strong>Risk Title</strong> (Owner: X, Category: X, Status: X)</li>\n    <li><strong>Risk Title</strong> (Owner: X, Category: X, Status: X)</li>\n  </ul>\n\n  <h2>Risks by Category</h2>\n  <ul class=\"risk-list\">\n    <li><strong>Category A:</strong> X risks</li>\n    <li><strong>Category B:</strong> X risks</li>\n    <li><strong>Category C:</strong> X risks</li>\n  </ul>\n\n</body>\n</html>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        96
+      ],
+      "id": "937d6422-2c5b-4584-a9cf-58316bd63cab",
+      "name": "Risk Summariser"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "12JWcWEc7fyjDVwSjNayZsRwdKnvWylYGPvmSB3tOzyo",
+          "mode": "list",
+          "cachedResultName": "Risk Register",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JWcWEc7fyjDVwSjNayZsRwdKnvWylYGPvmSB3tOzyo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Risk Register Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JWcWEc7fyjDVwSjNayZsRwdKnvWylYGPvmSB3tOzyo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $json.row_number }}",
+            "Summarised?": "Yes"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Submission Time",
+              "displayName": "Submission Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Risk Title",
+              "displayName": "Risk Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Risk Description",
+              "displayName": "Risk Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Risk Owner",
+              "displayName": "Risk Owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Owner Email",
+              "displayName": "Owner Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Impact Assessment",
+              "displayName": "Impact Assessment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Likelihood Assessment",
+              "displayName": "Likelihood Assessment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Risk Category",
+              "displayName": "Risk Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Impact Score",
+              "displayName": "Impact Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Likelihood Score",
+              "displayName": "Likelihood Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Risk Score",
+              "displayName": "Risk Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Severity",
+              "displayName": "Severity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Submitted By",
+              "displayName": "Submitted By",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Summarised?",
+              "displayName": "Summarised?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        304,
+        768
+      ],
+      "id": "a4c7bdb6-28fc-42bb-9573-a4ac17116396",
+      "name": "Update Summary Status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "12JWcWEc7fyjDVwSjNayZsRwdKnvWylYGPvmSB3tOzyo",
+          "mode": "list",
+          "cachedResultName": "Risk Register",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JWcWEc7fyjDVwSjNayZsRwdKnvWylYGPvmSB3tOzyo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Risk Register Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JWcWEc7fyjDVwSjNayZsRwdKnvWylYGPvmSB3tOzyo/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Summarised?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -192,
+        96
+      ],
+      "id": "3edb4194-5995-4c39-ad96-1037792b13f0",
+      "name": "Get Weekly Risks",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                5
+              ],
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -464,
+        96
+      ],
+      "id": "4186edf3-af5e-43e7-8e6f-daab27cd9b17",
+      "name": "Schedule Trigger Once a Week"
+    },
+    {
+      "parameters": {
+        "content": "## **Weekly Schedule Trigger**\n\nRuns the workflow **once every Friday 5:00 PM**.\n",
+        "height": 320,
+        "width": 288,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        -64
+      ],
+      "id": "e54d6140-7821-4e08-bb7d-ec9c2078889d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## **Get Weekly Risks**\n\n1. **Get Weekly Risks (Google Sheets)**  \n   - Retrieves unsummarised risk entries from the **Risk Register Log** sheet in Google Sheets.  \n   - Connects to the spreadsheet **“Risk Register”** using the linked Google Sheets account.  \n   - Filters data based on the **\"Summarised?\"** column to identify new risks that need inclusion in the weekly report.\n\n2. **Aggregate (Data Aggregation)**  \n   - Aggregates all retrieved risk data into a single structured dataset.  \n   - Prepares the data for further processing and generation of the **Weekly Risk Summary Report**.\n",
+        "height": 560,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -304
+      ],
+      "id": "0ef63ba6-2a4b-4f63-8fda-372a50bbaacd",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## **Weekly Risk Dashboard Generator**\n\n1. **Risk Summariser (AI Agent)**  \n   - Uses an **AI-powered assistant (GPT-4.1)** to transform the raw risk data into a structured weekly summary.  \n   - Follows a pre-defined **HTML dashboard template** styled with inline CSS for email or web embedding.  \n   - Automatically fills in total risk counts, severity breakdowns, top risks, and category summaries.\n\n2. **Format Date (Code Node)**  \n   - Generates the current date in a readable format (e.g., “10/14/2025”).  \n   - Adds a `todayFormatted` field to timestamp the generated summary.  \n   - Ensures each report reflects the accurate date of creation.\n",
+        "height": 768,
+        "width": 576
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        176,
+        -304
+      ],
+      "id": "fa27bb76-eb96-40b3-9287-695afa0bef57",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## **Send Risk Register Summary Email**\n\n1. **Send Risk Register Summary Email (Gmail)**  \n   - Sends the **Weekly Risk Summary Report** via Gmail to the **Chief Risk Officer (CRO)**.  \n   - The **email body** is populated with the AI-generated HTML summary from the previous node.  \n   - Automatically **CCs the Risk Management Team** for visibility.  \n",
+        "height": 464,
+        "width": 432,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        768,
+        -176
+      ],
+      "id": "324d1a0e-5b37-4c8b-865b-7840757e067d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## **Update Summary Status**\n\n1. **Update Summary Status (Google Sheets)**  \n   - Updates the **“Summarised?”** column in the **Risk Register Log** Google Sheet.  \n   - Marks each processed risk entry as **“Yes”** once included in the weekly summary.  \n   - Helps prevent duplicate entries from being re-summarised in future reports.  \n",
+        "height": 464,
+        "width": 384,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        176,
+        480
+      ],
+      "id": "3db0a5c0-7d54-43c2-86a6-ea3264119c8c",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Risk Summariser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Risk Summariser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Date": {
+      "main": [
+        [
+          {
+            "node": "Send Risk Register Summary Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Risk Summariser": {
+      "main": [
+        [
+          {
+            "node": "Format Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Weekly Risks": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Summary Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger Once a Week": {
+      "main": [
+        [
+          {
+            "node": "Get Weekly Risks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4fee5203-6602-4ab3-976e-b930ae47a566",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "vycp5Qi0lDlowchm",
+  "tags": [
+    {
+      "updatedAt": "2025-10-14T08:12:47.863Z",
+      "createdAt": "2025-10-14T08:12:47.863Z",
+      "id": "UcIcs27RLBCMShna",
+      "name": "Google"
+    },
+    {
+      "updatedAt": "2025-10-14T05:48:57.945Z",
+      "createdAt": "2025-10-14T05:48:57.945Z",
+      "id": "ngEHeVxhnvXpb1Fx",
+      "name": "Risk Management"
+    }
+  ]
+}

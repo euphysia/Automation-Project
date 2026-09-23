@@ -1,0 +1,331 @@
+{
+  "name": "Telegram Scheduling Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -448,
+        -96
+      ],
+      "id": "4202ceba-7b14-4b04-9783-59f358ca27b1",
+      "name": "Telegram Trigger",
+      "webhookId": "10acaf96-b9e4-4713-aec0-c3db9aac53be",
+      "credentials": {
+        "telegramApi": {
+          "id": "sIDYjseh2W2mq4Ig",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=# Overview\nYou are a helpful assistant who will plan the users day and set it in calendar using calendar tools.  Your responsibilities include creating, getting, and deleting events in the\nuser's calendar.\n\nWhen user started a chat, you can Greet them first, introduce yourself and tell the user what your purpose. Then tell the user that since Schedulo is still in demo mode. The calendar used will be: https://calendar.google.com/calendar/u/0/embed?src=schedulotele@gmail.com&ctz=Asia/Kuala_Lumpur \n\n** Calendar Management Tools **\n- Use \"Create Event\" for solo events. You need to decide on the name of the events unless user wants a spesific name.\n- Use \"Get Events\" to fetch calendar schedules.\n- Use \"Delete Event\" to delete an event. You must use\n\"Get Events\" first to get the ID of the event to delete.\n- If the user asks to \"reschedule\" or change the time/day of an event, follow these rules:\n- Use \"Update Event\" to update event time/day/duration. \n  1. Use \"Get Events\" to find the original event (by title, date, etc.).\n  2. Use \"Update Event\" to modify:\n     - The `start.dateTime` (including both new date and time)\n     - The `end.dateTime`\n  3. Keep the original event title (`summary`) exactly the same **unless** the user says to rename it.\n \n  ❌ Do NOT add notes like \"(rescheduled to Thursday 8PM)\" in the title.\n  ✅ Only update the event’s actual start and end date/time fields.\n\n## Rules\n- You must use \"Get Events\" first before any action\n- If new input will create conflict with existing\ncalendar time slot, let user know and offer alternative\ntime slots on the same day.\n\nIf no exact start/end time specified, you can put whateveer time you want that you think is reasonable. sometimes the user doest specify date and just use \"tomorrow\" so you need to figure out when is it by using the time now.\nThe date and time now is {{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "3f5f2e52-4cab-4069-8376-82ac625a9b1a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.from.id }}",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -112,
+        128
+      ],
+      "id": "86bdfbef-c448-4fc2-8e28-fe5ec14c525a",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "schedulotele@gmail.com",
+          "mode": "list",
+          "cachedResultName": "schedulotele@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "updateFields": {
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+          "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Location', ``, 'string') }}",
+          "repeatUntil": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repeat_Until', ``, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        128
+      ],
+      "id": "fe6d9fe4-891f-4b71-9d6e-bd1aaec2b0d7",
+      "name": "Update Event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "KNzynBxeY6th9gHP",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "schedulotele@gmail.com",
+          "mode": "list",
+          "cachedResultName": "schedulotele@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "additionalFields": {
+          "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Location', ``, 'string') }}",
+          "repeatUntil": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repeat_Until', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        144,
+        128
+      ],
+      "id": "7a8093c7-4513-4680-880b-e91c5aff9315",
+      "name": "Create Event",
+      "alwaysOutputData": false,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "KNzynBxeY6th9gHP",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "schedulotele@gmail.com",
+          "mode": "list",
+          "cachedResultName": "schedulotele@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        128
+      ],
+      "id": "baf77c00-1712-4410-b0e2-8361d67d5ae4",
+      "name": "Delete Event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "KNzynBxeY6th9gHP",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "schedulotele@gmail.com",
+          "mode": "list",
+          "cachedResultName": "schedulotele@gmail.com"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {
+          "orderBy": "startTime",
+          "recurringEventHandling": "expand"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        128
+      ],
+      "id": "3996f788-80a6-4fb7-881c-c6ea33703c6f",
+      "name": "Get Event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "KNzynBxeY6th9gHP",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        128
+      ],
+      "id": "5310020f-5119-4b8a-a598-60a53bd7bbd6",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        -96
+      ],
+      "id": "c03aec49-58f8-4693-837c-da5d23332ad8",
+      "name": "Send a text message",
+      "webhookId": "b2585e4f-0d3f-4ba2-84e3-ffa0cc800974",
+      "credentials": {
+        "telegramApi": {
+          "id": "U7IJGUz9ht2uoKCS",
+          "name": "Staff Self Service Chatbot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6ef06869-0aae-441f-b1b6-74299c1ad1e3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "M6IIePt9t66XPZCx",
+  "tags": []
+}
