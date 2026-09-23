@@ -1,0 +1,397 @@
+{
+  "name": "Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "=New Hire - {{ $('Append as Successful Candidate').item.json['Full Name'] }}",
+        "message": "=<!doctype html> <html> <head> <p>\n<img src=\"https://drive.google.com/uc?export=view&id=1ZsBGhPFwTZunY-ogkqEpwjzYEzfEjEA0\" alt=\"Lilac Grove Logo\" width=\"600\" height=\"115\" style=\"display: block; margin-top: 10px;\" />\n</p>  <meta charset=\"utf-8\">   <title>New Hire Notification</title> </head> <body style=\"font-family: Arial, Helvetica, sans-serif; color:#222; line-height:1.4; margin:0; padding:20px;\">   <h2 style=\"color:#274746;\">New Team Member Joining</h2>   <p>Dear <strong>{{ $json['Full Name'] }}</strong>,</p>    <p>This is to inform you that <strong>{{ $('Append as Successful Candidate').item.json['Full Name'] }}</strong> will be joining your team at <strong>Lilac Grove Kindergarten</strong>.</p>    <p><strong>Position:</strong> {{ $('Append as Successful Candidate').item.json.Position }}<br>   <strong>Department:</strong> {{ $json.Department }}</p>    <h3>Onboarding Steps</h3>   <ul>     <li>Prepare a welcome message and workspace</li>     <li>Schedule first-week check-ins</li>     <li>Ensure training completion is monitored</li>   </ul>    <p>Let HR know if you need any additional support or resources to welcome <strong>{{ $('Append as Successful Candidate').item.json['Full Name'] }}</strong>.</p>    <p>Best regards,<br><strong>Ruby</strong><br>HR Department — Lilac Grove Kindergarten</p> </body> </html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        176
+      ],
+      "id": "4bd21d1f-6120-4a19-9e8b-539885c8935a",
+      "name": "Send Email to Department Manager",
+      "webhookId": "94962aa7-7283-4878-8fd4-d761e4d0bca9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "=New Employee IT Setup -  {{ $('Append as Successful Candidate').item.json['Full Name'] }}",
+        "message": "=<!doctype html>\n<html>\n<head>\n  <p>\n<img src=\"https://drive.google.com/uc?export=view&id=1ZsBGhPFwTZunY-ogkqEpwjzYEzfEjEA0\" alt=\"Lilac Grove Logo\" width=\"600\" height=\"115\" style=\"display: block; margin-top: 10px;\" />\n</p>\n  <meta charset=\"utf-8\">\n  <title>New Employee IT Setup</title>\n</head>\n<body style=\"font-family: Arial, Helvetica, sans-serif; color:#222; line-height:1.4; margin:0; padding:20px;\">\n  <h2 style=\"color:#274746;\">New Employee IT Setup Request</h2>\n  <p>Please set up the following accounts and access for our new hire:</p>\n\n  <ul>\n    <li><strong>Full Name:</strong> {{ $('Append as Successful Candidate').item.json['Full Name'] }}</li>\n    <li><strong>Role:</strong> {{ $('Append as Successful Candidate').item.json.Position }}</li>\n    <li><strong>Department:</strong> IT</li>\n  </ul>\n\n  <h3>Required Actions</h3>\n  <ol>\n    <li>Create company email: firstname.lastname@lilacgrove.edu</li>\n    <li>Assign Role-Based Access Control (RBAC) for:\n      <ul>\n        <li>Email & Calendar</li>\n        <li>Staff Portal</li>\n        <li>Learning Management System</li>\n        <li>Shared Drives / Resources</li>\n      </ul>\n    </li>\n    <li>Send account credentials securely to HR for distribution</li>\n  </ol>\n\n  <p>Please confirm once complete.</p>\n\n  <p>Thank you,<br><strong>Ruby</strong><br>HR Department — Lilac Grove Kindergarten</p>\n</body>\n</html>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        -16
+      ],
+      "id": "84a7d262-15bc-4f2d-bfaf-414f8f99f317",
+      "name": "Send Email to IT Department",
+      "webhookId": "92ea1a69-f249-4a5f-b023-0111b5cf6cfc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk",
+          "mode": "list",
+          "cachedResultName": "Job Application Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 965576465,
+          "mode": "list",
+          "cachedResultName": "Passed Candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit#gid=965576465"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Full Name": "={{ $json['Full Name'] }}",
+            "Resume": "={{ $json.Resume }}",
+            "Email": "={{ $json.Email }}",
+            "Position": "={{ $json['Position '] }}",
+            "Manager": "={{ $json.Manager }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Resume",
+              "displayName": "Resume",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Position",
+              "displayName": "Position",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Manager",
+              "displayName": "Manager",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Offer Letter Issued?",
+              "displayName": "Offer Letter Issued?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Confirmation Received?",
+              "displayName": "Confirmation Received?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -176,
+        -64
+      ],
+      "id": "1b885b76-58dc-454a-bc32-7c7a122501be",
+      "name": "Append as Successful Candidate",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {}
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk",
+          "mode": "list",
+          "cachedResultName": "Job Application Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 180401176,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit#gid=180401176"
+        },
+        "event": "rowUpdate",
+        "options": {
+          "columnsToWatch": [
+            "Confirmation received?"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -64
+      ],
+      "id": "e92ebbb6-4226-4350-8ee6-a0132320cca7",
+      "name": "Trigger on Confirmation",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "8JdPD9bM2EtI3oF5",
+          "name": "New Google Sheets Trigger Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "=Welcome Message - {{ $json['Full Name'] }}",
+        "message": "=<html>\n<head>\n  <meta charset=\"utf-8\">\n  <title>Welcome to Lilac Grove Kindergarten</title>\n</head>\n<body style=\"font-family: Arial, Helvetica, sans-serif; color:#222; line-height:1.4; margin:0; padding:20px;\">\n  <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\">\n    <tr>\n      <td align=\"center\">\n        <table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border:1px solid #e6e6e6; border-radius:8px; overflow:hidden;\">\n          <tr style=\"background:#9ec5c9;\">\n            <td style=\"padding:20px; text-align:left;\">\n              <h1 style=\"margin:0; color:#274746; font-size:22px;\">Welcome to Lilac Grove Kindergarten!</h1>\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"padding:20px;\">\n              <p style=\"margin:0 0 12px 0;\">Hi <strong>{{ $json['Full Name'] }}</strong>,</p>\n\n              <p style=\"margin:0 0 12px 0;\">\n                Welcome to <strong>Lilac Grove Kindergarten</strong> — we’re delighted to have you join our family!\n              </p>\n\n              <h3 style=\"margin-top:16px; color:#274746;\">Documents we need</h3>\n              <p style=\"margin:0 0 8px 0;\">Please upload the following documents: <p>\n              <ul style=\"margin:8px 0 16px 20px;\">\n                <li>Copy of Identity Card / Passport</li>\n                <li>Bank details (for salary): Account name, bank name, account number</li>\n                <li>Medical Clearance / Vaccination Record (if applicable)</li>\n                <li>Emergency Contact Form</li>\n                <li>Teaching certificate or relevant qualifications (if applicable)</li>\n              </ul>\n\n              <p style=\"margin:0 0 12px 0;\">You can upload them securely here:</p>\n\n              <p style=\"text-align:center; margin:12px 0;\">\n                <a href=\"https://forms.gle/XYWNZnMkU3APiM3DA\" style=\"display:inline-block; padding:12px 20px; background:#6aa9a9; color:white; text-decoration:none; border-radius:6px; font-weight:600;\">\n                  Upload Documents\n                </a>\n              </p>\n\n              <hr style=\"border:none; border-top:1px solid #eee; margin:18px 0;\">\n\n              <h3 style=\"margin:0 0 8px 0; color:#274746;\">Onboarding & Training</h3>\n              <p style=\"margin:0 0 12px 0;\">\n                Mentor assigned to you is {{ $json.Manager }}. We also have a short training module to help you get started. You can access it here:\n              </p>\n              <p style=\"margin:12px 0; text-align:center;\">\n                <a href=\"https://www.notion.so/Onboarding-24c6d85553d4809b9640e729640a28fb?source=copy_link\" style=\"display:inline-block; padding:10px 16px; border:1px solid #6aa9a9; color:#274746; text-decoration:none; border-radius:6px;\">\n                  Open Onboarding Module\n                </a>\n              </p>\n\n              <p style=\"margin:0 0 12px 0;\">\n                <em>Suggestion:</em> if you prefer, you may complete the module after you’ve uploaded your documents — whichever works best for you.\n              </p>\n\n              <h4 style=\"margin-top:16px; color:#274746;\">Need help?</h4>\n              <p style=\"margin:0 0 8px 0;\">\n                If you have any questions or difficulty uploading files, contact <strong>Ruby</strong> at <a href=\"mailto:hannahrazali@gmail.com\">hannahrazali@gmail.com</a> or call 012-3456789.\n              </p>\n\n              <p style=\"margin:18px 0 0 0;\">\n                Warmly,<br>\n                <strong>Ruby</strong><br>\n                HR Manager — Lilac Grove Kindergarten\n              </p>\n\n              <p style=\"font-size:12px; color:#888; margin-top:14px;\">\n                Note: All uploaded files will be stored securely and used only for onboarding purposes.\n              </p>\n            </td>\n          </tr>\n\n          <tr style=\"background:#f6f6f6;\">\n            <td style=\"padding:12px; text-align:center; font-size:12px; color:#666;\">\n              Lilac Grove Kindergarten • 3456, Taman Bestari • 03-3456789\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        48,
+        -160
+      ],
+      "id": "c9c25aa0-56bf-4217-9dca-835856beb9f8",
+      "name": "Send Email to Candidate for Documents Required",
+      "webhookId": "cad614d7-492d-4ca8-bd26-efff3ed3a9a2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y",
+          "mode": "list",
+          "cachedResultName": "Employee Information",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Job Title",
+              "lookupValue": "Manager"
+            },
+            {
+              "lookupColumn": "Department",
+              "lookupValue": "IT"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        48,
+        32
+      ],
+      "id": "4dfbc8cc-ff26-43d1-bbad-492c080ab78b",
+      "name": "Get Department Manager Info",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Trigger on Confirmation\n\n## Overview\nThis workflow triggers whenever a candidate confirms their acceptance for the position applied for.\n",
+        "height": 368,
+        "width": 304,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        -272
+      ],
+      "id": "dd3a2605-69fa-4de1-af22-1f148032e28f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Successful Candidate Onboarding\n\n**Purpose:**  \nAutomate onboarding for candidates who passed the recruitment process.\n\n**Steps:**  \n1. Add the candidate to the **Passed Candidates** Google Sheet.  \n2. Send a **welcome email** with required documents and onboarding instructions.  \n3. Retrieve the **department manager info** for internal reference.\n\n",
+        "height": 672,
+        "width": 512
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -448
+      ],
+      "id": "257d2e6c-fb56-42ee-81c0-0b51431f58e5",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## New Hire Notification & IT Setup Workflow\n\n**Purpose:**  \nNotify relevant departments when a new employee joins and request necessary IT setup.\n\n**Steps:**  \n1. **Send Email to Department Manager**  \n   - Inform the manager about the new team member.  \n   - Include position, department, and onboarding steps.\n\n2. **Send Email to IT Department**  \n   - Request creation of company email and access to systems.  \n   - Assign Role-Based Access Control (RBAC) for necessary tools.  \n   - Ensure credentials are sent securely to HR for distribution.\n",
+        "height": 816,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -448
+      ],
+      "id": "9322c15b-8b5e-4d2c-bfc0-841e8f3b22ec",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Append as Successful Candidate": {
+      "main": [
+        [
+          {
+            "node": "Send Email to Candidate for Documents Required",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Department Manager Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger on Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Append as Successful Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to Candidate for Documents Required": {
+      "main": [
+        []
+      ]
+    },
+    "Get Department Manager Info": {
+      "main": [
+        [
+          {
+            "node": "Send Email to IT Department",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Email to Department Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ddb5797f-df38-4bd0-b315-fc2662e80f70",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "1cJIg7ojNbjBbLjv",
+  "tags": [
+    {
+      "updatedAt": "2025-09-04T06:03:09.498Z",
+      "createdAt": "2025-08-20T04:09:57.870Z",
+      "id": "SCZEAO3lLMzK9ddE",
+      "name": "HR & People Operations"
+    }
+  ]
+}

@@ -1,0 +1,859 @@
+{
+  "name": "Performance Review Checking",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -800,
+        48
+      ],
+      "id": "14f23cee-2fd1-4416-ba0b-016d82f256b5",
+      "name": "Schedule Trigger Once a Day"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI",
+          "mode": "list",
+          "cachedResultName": "Bi-Annual Company Department Review Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 568874035,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit#gid=568874035"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status Marked (For HR use)",
+              "lookupValue": "No"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -544,
+        48
+      ],
+      "id": "0f8b01f9-7130-4bc1-b3d2-1fce8ce1d8a2",
+      "name": "Get Form Submission",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI",
+          "mode": "list",
+          "cachedResultName": "Bi-Annual Company Department Review Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 841946091,
+          "mode": "list",
+          "cachedResultName": "Checklist",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit#gid=841946091"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Review Status": "Completed",
+            "Department": "={{ $json['Which department are you reviewing?'] }}"
+          },
+          "matchingColumns": [
+            "Department"
+          ],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Birthday",
+              "displayName": "Birthday",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employment Type",
+              "displayName": "Employment Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Review Assigned",
+              "displayName": "Review Assigned",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Review Due",
+              "displayName": "Review Due",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Review Status",
+              "displayName": "Review Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -320,
+        48
+      ],
+      "id": "afed0b90-ef03-4252-a72a-fc4b8329600b",
+      "name": "Update Review Status",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI",
+          "mode": "list",
+          "cachedResultName": "Bi-Annual Company Department Review Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 568874035,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit#gid=568874035"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get Form Submission').item.json.row_number }}",
+            "Status Marked (For HR use)": "Yes"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Which department are you reviewing?",
+              "displayName": "Which department are you reviewing?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "How would you rate the overall performance of this department?",
+              "displayName": "How would you rate the overall performance of this department?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "How well does this department collaborate with other departments?",
+              "displayName": "How well does this department collaborate with other departments?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Please rate the following aspects of the department: [Efficiency]",
+              "displayName": "Please rate the following aspects of the department: [Efficiency]",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Please rate the following aspects of the department: [Communication]",
+              "displayName": "Please rate the following aspects of the department: [Communication]",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Please rate the following aspects of the department: [Problem-Solving]",
+              "displayName": "Please rate the following aspects of the department: [Problem-Solving]",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Please rate the following aspects of the department: [Innovation]",
+              "displayName": "Please rate the following aspects of the department: [Innovation]",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Please rate the following aspects of the department: [Resource Utilization]",
+              "displayName": "Please rate the following aspects of the department: [Resource Utilization]",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "What are the department's key strengths?",
+              "displayName": "What are the department's key strengths?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "What areas do you think the department needs to improve upon?",
+              "displayName": "What areas do you think the department needs to improve upon?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Do you have any additional comments or suggestions for this department?",
+              "displayName": "Do you have any additional comments or suggestions for this department?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "What is your role within the company?",
+              "displayName": "What is your role within the company?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date of Review",
+              "displayName": "Date of Review",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status Marked (For HR use)",
+              "displayName": "Status Marked (For HR use)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -96,
+        -48
+      ],
+      "id": "b2fdbc3d-02cf-45ce-b8c9-b3aff5d0dd18",
+      "name": "Update Form Status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI",
+          "mode": "list",
+          "cachedResultName": "Bi-Annual Company Department Review Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 841946091,
+          "mode": "list",
+          "cachedResultName": "Checklist",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit#gid=841946091"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Review Status",
+              "lookupValue": "Pending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -96,
+        144
+      ],
+      "id": "3c0ecbdc-0258-483b-8a20-4f3736ce5d84",
+      "name": "Get Pending Review",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get today's date without time\nconst today = new Date();\ntoday.setHours(0, 0, 0, 0);\n\n// Loop through all incoming items\nreturn items.map(item => {\n    const dueDate = new Date(item.json[\"Review Due\"]);\n    dueDate.setHours(0, 0, 0, 0);\n\n    // Calculate difference in days\n    const diffDays = Math.floor((dueDate - today) / (1000 * 60 * 60 * 24));\n\n    // Add a new field indicating if it's 3 days before due\n    item.json.isThreeDaysBefore = (diffDays === 3);\n\n    return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        144
+      ],
+      "id": "c2fa74d2-44a7-4f0b-95d6-e6b335ff865d",
+      "name": "Get 3 Days before Submission Date"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2d32839b-2095-4a30-8951-2db640cc3178",
+              "leftValue": "={{ $json['Review Status'] }}",
+              "rightValue": "Pending",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        144
+      ],
+      "id": "634ee507-bb3d-4cd6-9d66-4e947aa2511a",
+      "name": "If No Review Pending Status"
+    },
+    {
+      "parameters": {
+        "operation": "deactivate",
+        "workflowId": {
+          "__rl": true,
+          "value": "nw98wUUJX3CA30WH",
+          "mode": "list",
+          "cachedResultName": "Performance Review Checking (#nw98wUUJX3CA30WH)"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        736,
+        -80
+      ],
+      "id": "6d646cb9-d599-4ece-a7dc-a3bbb1e2b852",
+      "name": "Deactivate This Workflow",
+      "credentials": {
+        "n8nApi": {
+          "id": "13u8nfOouWrUvNxP",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3cc4c0b3-ffb2-41d7-9784-c6a719757ca7",
+                    "leftValue": "={{ $now }}",
+                    "rightValue": "={{ $json['Review Due'] }}",
+                    "operator": {
+                      "type": "dateTime",
+                      "operation": "after"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2f240444-d7b8-4ce6-b9da-c06f93e6700c",
+                    "leftValue": "={{ $json.isThreeDaysBefore }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        688,
+        512
+      ],
+      "id": "14aa3474-139e-44f3-a611-6a4b171d7001",
+      "name": "Determine If needs To be Reminder or Overdue"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Overdue — Immediate Action Required for Performance Review",
+        "message": "=<p>Hi <strong>{{ $json['Full Name'] }}</strong>,</p> <p>   Our records show that your <strong>biannual performance review</strong> is now <strong>overdue</strong>. </p> <p>   We kindly request that you complete it <strong>as soon as possible</strong> to keep HR timelines on track. </p> <p>   <a href=\"https://forms.gle/jDxuG44qog4ZnAsZ6\"       style=\"background-color: #dc3545; color: white; padding: 10px 18px; text-decoration: none; border-radius: 4px;\">     Complete Performance Review   </a> </p> <p>   If you need assistance or have any questions, please contact us immediately so we can help you resolve any issues. </p> <p>   Thank you for your immediate attention to this matter. </p> <p>   Best regards,<br>   <strong>Ruby</strong><br>   HR Department<br>   Lilac Grove Kindergarten<br>   <a href=\"mailto:example@gmail.com\">example@gmail.com</a> </p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        416
+      ],
+      "id": "b0a1dc94-fae9-4719-aec1-809fa5ff4a82",
+      "name": "Send Review Overdue Message",
+      "webhookId": "251593d2-1c77-42c8-a8ec-0445dd98f2f7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "3 Days Left — Complete Your Biannual Performance Review",
+        "message": "=<p>Hi <strong>{{ $json['Full Name'] }}</strong>,</p>\n<p>\n  This is a friendly reminder that your <strong>biannual performance review</strong> is due in \n  <strong>3 days</strong>.\n</p>\n<p>\n  Please take a moment to complete the review before the deadline to ensure everything stays on track.\n</p>\n<p>\n  <a href=\"https://forms.gle/jDxuG44qog4ZnAsZ6\" \n     style=\"background-color: #007bff; color: white; padding: 10px 18px; text-decoration: none; border-radius: 4px;\">\n    Complete Performance Review\n  </a>\n</p>\n<p>\n  <strong>Due Date:</strong> {{ $json['Review Due'] }}<br>\n  We recommend completing the review as soon as possible to avoid last-minute rushes.\n</p>\n<p>\n  If you have any questions or run into any issues, please feel free to reach out to us.\n</p>\n<p>\n  Thank you for your prompt attention to this matter.\n</p>\n<p>\n  Best regards,<br>\n  <strong>Ruby</strong><br>\n  HR Department<br>\n  Lilac Grove Kindergarten<br>\n  <a href=\"mailto:example@gmail.com\">example@gmail.com</a>\n</p>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        608
+      ],
+      "id": "e9ef3379-530c-40c6-aecc-19cdd5e6ee27",
+      "name": "Send Review Reminder Massage",
+      "webhookId": "4dbe6ec8-c3e5-4eaa-bc6c-5de7306e72fc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## **Daily Schedule Trigger**\n\n### **Flow Explanation**\n\n- **Schedule Trigger Once a Day**  \n  This trigger runs the workflow **once every day at 11:00 AM**.  \n\n",
+        "height": 400,
+        "width": 288,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -896,
+        -176
+      ],
+      "id": "3c56e3aa-93c6-46b4-8a85-6104335bf0ee",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## **What it does**\n1. Checks the **Form Response Sheet** for new department review form submissions.  \n2. Updates the **Checklist sheet** to mark the department’s review status as **\"Completed\"**.  \n3. Updates the **Form Responses sheet** to change the HR status to **\"Yes\"**.  \n4. Retrieves any pending reviews for reference.  \n",
+        "height": 528,
+        "width": 656
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        -224
+      ],
+      "id": "478e66fe-5761-4fac-9d0f-a6dc18db2b3c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## **Overview**\nThis checks for submission due date and identifies department that needs attention.\n\n## **Flow Explanation**\n1. **Get 3 Days Before Submission Date (Code Node)**  \n   - Compares today’s date with each department’s **Review Due** date.  \n   - Flags items where the due date is exactly **3 days away** with a new field:  \n     - `isThreeDaysBefore = true`\n\n2. **If No Review Pending Status (IF Node)**  \n   - Checks if there's no more **\"Pending\"** status.  \n",
+        "height": 560,
+        "width": 400,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        112,
+        -240
+      ],
+      "id": "1ecd7005-0add-429e-b7f9-fe4eaa75faa7",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## If there is no more \"Pending\" Status\n\nStop the workflow.",
+        "height": 336,
+        "width": 352,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -240
+      ],
+      "id": "c026f73d-a967-41be-9741-e75132796247",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## If there is still \"Pending \" Status\n\nRoute to switch case.\n\n1. If today is 3 days before Submission Due Date:\n   - Send a **Reminder Email** to the department's manager.\n\n2. If today is already passed the due date:\n  - Send an **Overdue Email** to the department's manager.\n\n3. Else:\n  - Do nothing.",
+        "height": 688,
+        "width": 448,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        640,
+        112
+      ],
+      "id": "c37f337f-1ab2-4ee9-9972-1424f036b2fd",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger Once a Day": {
+      "main": [
+        [
+          {
+            "node": "Get Form Submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Form Submission": {
+      "main": [
+        [
+          {
+            "node": "Update Review Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Review Status": {
+      "main": [
+        [
+          {
+            "node": "Get Pending Review",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Form Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pending Review": {
+      "main": [
+        [
+          {
+            "node": "Get 3 Days before Submission Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get 3 Days before Submission Date": {
+      "main": [
+        [
+          {
+            "node": "If No Review Pending Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If No Review Pending Status": {
+      "main": [
+        [
+          {
+            "node": "Deactivate This Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Determine If needs To be Reminder or Overdue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determine If needs To be Reminder or Overdue": {
+      "main": [
+        [
+          {
+            "node": "Send Review Overdue Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Review Reminder Massage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6eab0ab1-b081-4a10-a400-5b6097eef46a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "nw98wUUJX3CA30WH",
+  "tags": [
+    {
+      "updatedAt": "2025-09-04T06:03:09.498Z",
+      "createdAt": "2025-08-20T04:09:57.870Z",
+      "id": "SCZEAO3lLMzK9ddE",
+      "name": "HR & People Operations"
+    }
+  ]
+}

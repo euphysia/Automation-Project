@@ -1,0 +1,700 @@
+{
+  "name": "Leave Management",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 8
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q",
+          "mode": "list",
+          "cachedResultName": "Leave Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1149323726,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q/edit#gid=1149323726"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        160
+      ],
+      "id": "b6de87f4-69df-46c8-9a2c-e0a4be7ea95c",
+      "name": "Get Leave Application",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "8JdPD9bM2EtI3oF5",
+          "name": "New Google Sheets Trigger Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5013e623-3ba8-4316-86b9-62d63b24274b",
+              "leftValue": "={{ $('Get Leave Application').item.json['Type of Leave'] }}",
+              "rightValue": "Annual Leave",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        160
+      ],
+      "id": "f7300fca-ed02-498b-9628-201cb9045e45",
+      "name": "Verify if Annual Leave"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ddaa0f6c-f474-4081-851c-07b524e39471",
+              "leftValue": "={{ $('Get Leave Balance').item.json['MC Leave'] }}",
+              "rightValue": "={{ $('Get Leave Application').item.json['Number of Days'] }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        352
+      ],
+      "id": "e10dca90-0a46-4173-9c53-15fb2d24dbac",
+      "name": "Verify Leave Balance for MC"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "12130484-cbb1-4a81-b702-d09c5b1d34f3",
+              "leftValue": "={{ $('Get Leave Balance').item.json['Annual Leave'] }}",
+              "rightValue": "={{ $('Get Leave Application').item.json['Number of Days'] }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        -32
+      ],
+      "id": "1d9fadd0-54d3-4ee3-b1e4-c2831067c766",
+      "name": "Verify Leave Balance for Annual Leave",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Leave Request Approved",
+        "message": "=<p>Hi <strong>{{ $json['Full Name'] }}</strong>,</p>  <p>Good news! Your leave request for <strong>{{ $('Get Leave Application').item.json['Type of Leave'] }}</strong>  from <strong>{{ $('Get Leave Application').item.json['Start Date of Leave'] }}</strong> to <strong>{{ $('Get Leave Application').item.json['End Date of Leave'] }}</strong> has been <strong>approved</strong>.</p>  <p>Please make the necessary arrangements with your team to ensure a smooth handover of any pending tasks before your leave period begins.</p>  <p>If there are any changes to your plans, kindly inform HR as soon as possible so we can update our records.</p>  <p style=\"margin-top:16px;\">   <a href=\"mailto:hannahrazali@gmail.com\" style=\"background-color:#28a745;color:white;padding:10px 18px;text-decoration:none;border-radius:4px;\">     Contact HR   </a> </p>  <p>We wish you a pleasant and restful time during your leave.</p>  <p>Best regards,<br> <strong>Ruby</strong><br> HR Department<br> Lilac Grove Kindergarten<br> <a href=\"mailto:hannahrazali@gmail.com\">hannahrazali@gmail.com</a></p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        752,
+        256
+      ],
+      "id": "45ff1c74-cbe2-4b35-b0df-a8092027c701",
+      "name": "Approve Leave Request",
+      "webhookId": "c4039d31-48f4-4c5b-99c3-75d761dd611f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Leave Request Not Approved — Insufficient Leave Balance",
+        "message": "=<p>Hi <strong>{{ $json['Full Name'] }}</strong>,</p>\n\n<p>Thank you for submitting your leave request for <strong>{{ $('Get Leave Application').item.json['Type of Leave'] }}</strong> \nfrom <strong>{{ $('Get Leave Application').item.json['Start Date of Leave'] }}</strong> to <strong>{{ $('Get Leave Application').item.json['End Date of Leave'] }}</strong>.</p>\n\n<p>Unfortunately, we are unable to approve this request because our records show that you have <strong>not enough balance</strong> for this type of leave.</p>\n\n<p>If you still need time off, here are some options you may consider:</p>\n<ul>\n  <li><strong>Apply for unpaid leave</strong> for the requested dates.</li>\n  <li><strong>Adjust the dates</strong> to fit available leave balance or split the time into smaller days.</li>\n  <li><strong>Use a different leave type</strong> if eligible (e.g., annual leave, personal leave).</li>\n</ul>\n\n<p>If you’d like us to explore any of the options above, or if you believe the leave balance shown is incorrect, please reply to this email or contact HR directly and we’ll investigate.</p>\n\n<p style=\"margin-top:16px;\">\n  <a href=\"mailto:hannahrazali@gmail.com\" style=\"background-color:#007bff;color:white;padding:10px 18px;text-decoration:none;border-radius:4px;\">\n    Contact HR\n  </a>\n</p>\n\n<p>We appreciate your understanding and cooperation.</p>\n\n<p>Best regards,<br>\n<strong>Ruby</strong><br>\nHR Department<br>\nLilac Grove Kindergarten<br>\n<a href=\"mailto:hannahrazali@gmail.com\">hannahrazali@gmail.com</a></p>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        752,
+        64
+      ],
+      "id": "9ff56674-079d-430b-94e1-cefa0d58856f",
+      "name": "Disapprove Leave Request",
+      "webhookId": "d84f1993-1282-4180-91d7-9046134498c5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q",
+          "mode": "list",
+          "cachedResultName": "Leave Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1778065338,
+          "mode": "list",
+          "cachedResultName": "Numbert of Leave",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q/edit#gid=1778065338"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get Leave Balance').item.json.row_number }}",
+            "Annual Leave": "={{ $('Get Leave Balance').item.json['Annual Leave'] - $('Get Leave Application').item.json['Number of Days'] }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Birthday",
+              "displayName": "Birthday",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employment Type",
+              "displayName": "Employment Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "MC Leave",
+              "displayName": "MC Leave",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Annual Leave",
+              "displayName": "Annual Leave",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        752,
+        -176
+      ],
+      "id": "2e20ee54-d52e-431c-9c40-14fb0be5e55b",
+      "name": "Update New Annual Leave Balance",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q",
+          "mode": "list",
+          "cachedResultName": "Leave Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1778065338,
+          "mode": "list",
+          "cachedResultName": "Numbert of Leave",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q/edit#gid=1778065338"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get Leave Balance').item.json.row_number }}",
+            "Annual Leave": "={{ $('Get Leave Balance').item.json['MC Leave'] - $('Get Leave Application').item.json['Number of Days'] }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Birthday",
+              "displayName": "Birthday",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employment Type",
+              "displayName": "Employment Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "MC Leave",
+              "displayName": "MC Leave",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Annual Leave",
+              "displayName": "Annual Leave",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        752,
+        496
+      ],
+      "id": "55862649-e3b3-42c8-8cc2-f341dda37887",
+      "name": "Update New MC Leave Balance",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Get Leave Application\n\nThis trigger watches a Google Sheet (`Leave Management Form Responses).  \n\n- Runs whenever a new row is added.  \n- Captures new leave applications submitted through the form.  \n",
+        "height": 432,
+        "width": 272,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -352,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "8335e18d-57a0-4e5d-8702-fcba66d3f389",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Leave Verification\n\n- Retrieves the current leave balance for the requesting employee.  \n\n- Check if it is an annual leave request or MC Leave Request",
+        "height": 432,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "22005a8f-46ae-4a72-9806-1f92815c3370",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q",
+          "mode": "list",
+          "cachedResultName": "Leave Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1778065338,
+          "mode": "list",
+          "cachedResultName": "Numbert of Leave",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13bb8YBs6CfiECwk6FnjbhewONddd5gcCkerwPJe6U_Q/edit#gid=1778065338"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json['Email Address'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -16,
+        160
+      ],
+      "id": "c266ace2-7c9a-4766-a1b1-3cacecdfeed3",
+      "name": "Get Leave Balance",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Leave Approval\n\nFor both **Annual** and **MC Leave**:\n\n- If the requested leave type has no remaining balance:\nAn email will be sent to the requester notifying them that the leave has been disapproved.\n\n- If the requested leave type has enough balance:\nAn email will be sent to the requester notifying them that the leave has been approved, and the leave days will be deducted from their current balance.",
+        "height": 1168,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        368,
+        -480
+      ],
+      "id": "dc2eeedd-f2f9-4575-aebb-83226bcdab01",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Leave Application": {
+      "main": [
+        [
+          {
+            "node": "Get Leave Balance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify if Annual Leave": {
+      "main": [
+        [
+          {
+            "node": "Verify Leave Balance for Annual Leave",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Verify Leave Balance for MC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Leave Balance for MC": {
+      "main": [
+        [
+          {
+            "node": "Approve Leave Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update New MC Leave Balance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Disapprove Leave Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Leave Balance for Annual Leave": {
+      "main": [
+        [
+          {
+            "node": "Approve Leave Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update New Annual Leave Balance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Disapprove Leave Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve Leave Request": {
+      "main": [
+        []
+      ]
+    },
+    "Disapprove Leave Request": {
+      "main": [
+        []
+      ]
+    },
+    "Get Leave Balance": {
+      "main": [
+        [
+          {
+            "node": "Verify if Annual Leave",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dca078cf-0f0b-453f-ab34-43a8b5bb0d59",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "oy2Jl3jEPEglp2tD",
+  "tags": [
+    {
+      "updatedAt": "2025-09-04T06:03:09.498Z",
+      "createdAt": "2025-08-20T04:09:57.870Z",
+      "id": "SCZEAO3lLMzK9ddE",
+      "name": "HR & People Operations"
+    }
+  ]
+}

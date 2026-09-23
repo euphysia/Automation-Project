@@ -1,0 +1,595 @@
+{
+  "name": "Recruitment and hiring (Passed Interview)",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d4b8e176-b038-41bb-9b92-c60cf2745bd4",
+                    "leftValue": "={{ $json['Passed Interview?'] }}",
+                    "rightValue": "Yes",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Passed Interview?'] }}",
+                    "rightValue": "No",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "26fefe26-1292-4dac-80fe-e3ba5afdf93a"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        336,
+        64
+      ],
+      "id": "6f24de8c-29db-4119-9a33-2715b753a33f",
+      "name": "Determine if Passed Interview"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "hour": 11
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk",
+          "mode": "list",
+          "cachedResultName": "Job Application Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 180401176,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit#gid=180401176"
+        },
+        "event": "rowUpdate",
+        "options": {
+          "columnsToWatch": [
+            "Passed Interview?"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        64
+      ],
+      "id": "1930288e-6c76-4684-84d8-5dd088209848",
+      "name": "Get Shortlisted Candidate",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "8JdPD9bM2EtI3oF5",
+          "name": "New Google Sheets Trigger Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1iTObFPCb5vdcrQ7ALLC8wGYToLAN-tPxecHnYL1g4tk",
+          "mode": "list",
+          "cachedResultName": "Template for Offer Letter",
+          "cachedResultUrl": "https://docs.google.com/document/d/1iTObFPCb5vdcrQ7ALLC8wGYToLAN-tPxecHnYL1g4tk/edit?usp=drivesdk"
+        },
+        "name": "=Offer Letter for {{ $json['Full Name'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        656,
+        -96
+      ],
+      "id": "dd7a4087-e8fd-4274-829f-f4db0c3484a9",
+      "name": "Copy Offer Letter Template",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "fv7f4nSTlqNNDBOF",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Copy Offer Letter Template').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "[Current date]",
+              "replaceText": "={{$today.toFormat(\"d MMMM yyyy\")}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Candidate_Name]",
+              "replaceText": "={{ $('Get Shortlisted Candidate').item.json['Full Name'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Position_Title]",
+              "replaceText": "={{ $('Get Shortlisted Candidate').item.json['Position '] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Manager_Name]",
+              "replaceText": "={{ $('Get Shortlisted Candidate').item.json.Manager }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        880,
+        -96
+      ],
+      "id": "f4bb671b-9ed3-4b78-9ca5-deb57d0844b6",
+      "name": "Edit Offer Letter",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "FCB90gXxtkH9CBpk",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.documentId }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1104,
+        -96
+      ],
+      "id": "28b0e698-1dea-42d8-8875-532999e02895",
+      "name": "Download Offer Letter",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "fv7f4nSTlqNNDBOF",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get Shortlisted Candidate').item.json.Email }}",
+        "subject": "=Congratulations – Job Offer for {{ $('Get Shortlisted Candidate').item.json['Position '] }} at Lilac Grove Kindergarten",
+        "message": "=<p>\n<img src=\"https://drive.google.com/uc?export=view&id=1ZsBGhPFwTZunY-ogkqEpwjzYEzfEjEA0\" alt=\"Lilac Grove Logo\" width=\"600\" height=\"115\" style=\"display: block; margin-top: 10px;\" />\n</p>\n\n<h2 style=\"color: #004aad;\">Job Offer – {{ $('Get Shortlisted Candidate').item.json['Position '] }}</h2>\n    \n    <p>Dear <strong>{{ $('Get Shortlisted Candidate').item.json['Full Name'] }}</strong>,</p>\n\n    <p>We are excited to offer you the position of <strong>{{ $('Get Shortlisted Candidate').item.json['Position '] }}</strong> at <strong>Lilac Grove Kindergarten</strong>.</p>\n\n    <p>It was a pleasure speaking with you during the interview process. Your skills, experience, and attitude stood out, and we believe you’ll make a great addition to our team.</p>\n\n    <p>Please find the offer letter attached with this email. It includes details about the role, and other relevant information. Take your time to review it carefully, and feel free to reach out if you have any questions.</p>\n\n    <p>While we encourage you to take the time you need to consider the offer, do note that the position may not remain available indefinitely as we continue with our hiring process.</p>\n\n    <p>We hope to hear from you soon and look forward to the possibility of welcoming you aboard!</p>\n\n    <p style=\"margin-top: 30px;\">Warm regards,</p>\n    <p><strong>Ruby</strong><br>\n    HR Team<br>\n    Lilac Grove Kindergarten</p>",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1328,
+        -96
+      ],
+      "id": "7aa7658d-4db6-40dd-af6e-b2b4b62f2497",
+      "name": "Send Email to Passed Candidate",
+      "webhookId": "048f314e-779e-4295-85b9-8352a2c97dcc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk",
+          "mode": "list",
+          "cachedResultName": "Job Application Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 180401176,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit#gid=180401176"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Resume": "={{ $('Get Shortlisted Candidate').item.json.Resume }}",
+            "Offer Letter Issued?": "Yes"
+          },
+          "matchingColumns": [
+            "Resume"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Resume",
+              "displayName": "Resume",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Position ",
+              "displayName": "Position ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Passed Interview?",
+              "displayName": "Passed Interview?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Offer Letter Issued?",
+              "displayName": "Offer Letter Issued?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confirmation received?",
+              "displayName": "Confirmation received?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Manager",
+              "displayName": "Manager",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1552,
+        -96
+      ],
+      "id": "9041836a-d436-4406-bee5-253838a9a687",
+      "name": "Update Offer Letter Status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "=Lilac Grove Kindergarten Interview Update – {{ $json['Full Name'] }}",
+        "message": "=<p>\n<img src=\"https://drive.google.com/uc?export=view&id=1ZsBGhPFwTZunY-ogkqEpwjzYEzfEjEA0\" alt=\"Lilac Grove Logo\" width=\"600\" height=\"115\" style=\"display: block; margin-top: 10px;\" />\n</p>\n\n<p>Dear <strong>{{ $json['Full Name'] }}</strong>,</p>\n    \n    <p>Thank you very much for taking the time to attend the interview for the <strong>{{ $json['Position '] }}</strong> role at <strong>Lilac Grove Kindergarten</strong>. We truly appreciate the effort you put into the process and enjoyed getting to know you.</p>\n    \n    <p>After careful consideration, we regret to inform you that you have not been selected to move forward in the hiring process at this time.</p>\n    \n    <p>Please don’t be discouraged — this decision was not easy, and it does not reflect negatively on your skills or experience. We recognize your potential and encourage you to continue pursuing your professional goals with confidence and determination.</p>\n    \n    <p>Thank you once again for your interest in joining our team. We wish you all the best in your career journey ahead.</p>\n\n    <p style=\"margin-top: 30px;\">Warm regards,</p>\n    <p><strong>Ruby</strong><br>\n    HR Team<br>\n    Lilac Grove Kindergarten</p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        768,
+        288
+      ],
+      "id": "25abc613-b1c5-4667-b8d1-cc4fc6ffc67d",
+      "name": "Send Rejection Email",
+      "webhookId": "13c7fd5d-38ff-4e17-b183-b2243345e43a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Shortlisted Candidate Trigger\n\n**Purpose:**  \nAutomatically detects the status of the interview.\n",
+        "height": 384,
+        "width": 272,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -144
+      ],
+      "id": "dd4b3df3-9918-427e-aed9-48f6ac5f3453",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Determine if Passed Interview\n \n**Purpose:** Check whether a candidate has passed the interview.\n\n## Logic\n- If the `Passed Interview?` column is `Yes`, the candidate follows the **Yes** path.  \n- If the `Passed Interview?` column is `No`, the candidate follows the **No** path.\n\n## Usage\nThis node is used to branch the workflow based on interview results, allowing different actions for successful and unsuccessful candidates.\n",
+        "height": 576,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        192,
+        -336
+      ],
+      "id": "bfd9f4bc-dcb4-43a4-ba30-88e852e90511",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Offer Letter Automation\n\n**Purpose:** Automates the creation, editing, downloading, and emailing of offer letters to shortlisted candidates, and updates their status in the Google Sheet.\n\n1. **Copy Offer Letter Template**  \n   - Copies a pre-made offer letter template and renames it for the candidate.\n\n2. **Edit Offer Letter**  \n   - Replaces placeholders in the copied offer letter with the candidate's details:\n    \n3. **Download Offer Letter**  \n   - Downloads the edited offer letter as a PDF.\n\n4. **Send Email to Passed Candidate**  \n   - Sends the offer letter PDF to the candidate’s email with a personalized message.\n\n5. **Update Offer Letter Status**  \n   - Marks `Offer Letter Issued?` as \"Yes\" in the candidate's row in the Job Application Form.\n",
+        "height": 656,
+        "width": 1120,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        624,
+        -560
+      ],
+      "id": "7c624649-a54f-42d2-81db-980449b084d5",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Email for Unsuccessful Candidate\n\n**Purpose:** Automate Email to inform the candidates of their unsuccessful application.\n\n\n\n\n ",
+        "height": 352,
+        "width": 432,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        624,
+        128
+      ],
+      "id": "d7943e1e-e9bb-4a66-868e-2f330682f0d3",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Determine if Passed Interview": {
+      "main": [
+        [
+          {
+            "node": "Copy Offer Letter Template",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Rejection Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Shortlisted Candidate": {
+      "main": [
+        [
+          {
+            "node": "Determine if Passed Interview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy Offer Letter Template": {
+      "main": [
+        [
+          {
+            "node": "Edit Offer Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Offer Letter": {
+      "main": [
+        [
+          {
+            "node": "Download Offer Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Offer Letter": {
+      "main": [
+        [
+          {
+            "node": "Send Email to Passed Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to Passed Candidate": {
+      "main": [
+        [
+          {
+            "node": "Update Offer Letter Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b962e0b0-851a-42f5-b65c-42435bca1943",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "JeuUhyJKCrQdfCeA",
+  "tags": [
+    {
+      "updatedAt": "2025-09-04T06:03:09.498Z",
+      "createdAt": "2025-08-20T04:09:57.870Z",
+      "id": "SCZEAO3lLMzK9ddE",
+      "name": "HR & People Operations"
+    }
+  ]
+}

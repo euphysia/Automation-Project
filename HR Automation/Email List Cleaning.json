@@ -1,0 +1,525 @@
+{
+  "name": "Email List Cleaning",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2528,
+        80
+      ],
+      "id": "d418c812-7ba7-4b56-8afa-a97bd6164e12",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0",
+          "mode": "list",
+          "cachedResultName": "Important Company Dates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 339313045,
+          "mode": "list",
+          "cachedResultName": "Email",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0/edit#gid=339313045"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2304,
+        80
+      ],
+      "id": "de65670b-d62e-4e28-b25b-4a6bd9d8f03f",
+      "name": "Get List of Emails",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a542a0d8-fe31-4e43-9a7c-abb3cf8a7f4e",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "Valid",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1888,
+        80
+      ],
+      "id": "6a1d0fd9-2e6c-4620-b94c-ca403d4b4b87",
+      "name": "If Email is Valid"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0",
+          "mode": "list",
+          "cachedResultName": "Important Company Dates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 339313045,
+          "mode": "list",
+          "cachedResultName": "Email",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0/edit#gid=339313045"
+        },
+        "startIndex": "={{ $json.row }}"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1536,
+        144
+      ],
+      "id": "ed711f1f-3eaa-4a53-ab5a-10dbad7286f3",
+      "name": "Delete Invalid Emails",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// throw away everything\nreturn [];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        144
+      ],
+      "id": "c683a453-f9a0-4a1b-9240-f7f88092ebde",
+      "name": "Return Nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1152,
+        80
+      ],
+      "id": "4c36de66-e591-49a5-a055-e02d301cb264",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "emailVerifier",
+        "email": "={{ $json.email }}"
+      },
+      "type": "n8n-nodes-base.hunter",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        80
+      ],
+      "id": "c8f9bcc5-7ab5-4023-9d8b-350cf8b62cc5",
+      "name": "Verify Email with Hunter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5dfad5af-6af1-4b30-80dc-d27a09e8b326",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "valid",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -688,
+        80
+      ],
+      "id": "657105d9-d56d-4897-994f-1d1ffb6dbdb5",
+      "name": "If Email is Active"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0",
+          "mode": "list",
+          "cachedResultName": "Important Company Dates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 339313045,
+          "mode": "list",
+          "cachedResultName": "Email",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0/edit#gid=339313045"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -464,
+        80
+      ],
+      "id": "238e9a46-8ff7-4083-bad8-0496f6f3c77b",
+      "name": "Get Invalid/Inactive Email",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "items.sort((a, b) => b.json.row_number - a.json.row_number);\nreturn items;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        80
+      ],
+      "id": "e8939ee3-568a-40f6-93bd-9a13b451ee6d",
+      "name": "Sort Rows in Descending Order"
+    },
+    {
+      "parameters": {
+        "jsCode": "// sort rows descending so deletes don't shift\nitems.sort((a, b) => b.json.row - a.json.row);\nreturn items;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1712,
+        144
+      ],
+      "id": "8a38362a-e534-4e6f-bdd6-406318d713e0",
+      "name": "Sort Rows in Descending Order1"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0",
+          "mode": "list",
+          "cachedResultName": "Important Company Dates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 339313045,
+          "mode": "list",
+          "cachedResultName": "Email",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0/edit#gid=339313045"
+        },
+        "startIndex": "={{ $json.row_number }}"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -16,
+        80
+      ],
+      "id": "9faf50ee-54b2-4789-8791-f305e2574a49",
+      "name": "Delete Invalid/Inactive Emails",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const seen = new Set();\nreturn items.map((item, index) => {\n  const email = item.json.Email ? String(item.json.Email).trim() : \"\";\n  let status = \"Invalid\";\n\n  if (email && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {\n    if (!seen.has(email)) {\n      seen.add(email);\n      status = \"Valid\";\n    } else {\n      status = \"Duplicate\";\n    }\n  }\n\n  return {\n    json: {\n      email,\n      status,\n      row: item.json.row_number // keep the row from input\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2112,
+        80
+      ],
+      "id": "b1e4b679-94c9-446b-b7a5-5f42f235af0e",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "content": "## Manual Trigger\n\nThis workflow starts **only when manually executed**.\n\n",
+        "height": 400,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2592,
+        -112
+      ],
+      "id": "399f358f-73a2-43dd-a4d2-5e9a74b34bfd",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Email List Cleaner\n\nThis workflow helps clean and validate email addresses from a Google Sheet.  \n\n1. **Get List of Emails**  \n   - Fetches all emails from the Google Sheet named **\"Email\"** in the document.\n\n2. **Code (Validation & Deduplication)**  \n   - Trims and checks if the email format is valid.  ",
+        "height": 528,
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2336,
+        -240
+      ],
+      "id": "e89a852e-ff22-4cfb-a185-331e9ffab5cd",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Email Verification with Hunter + Google Sheets Cleanup\n\nThis workflow verifies emails using **Hunter.io** and cleans up a Google Sheet by removing **inactive/invalid emails**.\n\n\n1. **Verify Email with Hunter**  \n   - Uses Hunter.io’s **Email Verifier** to check the deliverability of each email.  \n   - Returns a `status` field (e.g., `valid`, `invalid`).\n\n2. **If Email is Active**  \n   - Checks if the Hunter `status` is **valid**.  \n   - If **Valid** → keeps the email, no further action.  \n   - If **Invalid/Inactive** → continues to the deletion process.\n\n3. **Get Invalid/Inactive Email**  \n   - Looks up the invalid/inactive email in the **Email** sheet of **Important Company Dates**.  \n   - Finds its corresponding row number.\n\n4. **Sort Rows in Descending Order**  \n   - Orders rows from bottom to top.  \n   - Prevents accidental row shifting when deleting multiple entries.\n\n5. **Delete Invalid/Inactive Emails**  \n   - Removes all rows with emails flagged as **invalid/inactive** from the sheet.  \n\n",
+        "height": 816,
+        "width": 1152
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        -512
+      ],
+      "id": "b6aad01e-1b7e-4ce7-bc3a-33c9e9bf37e4",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Email List Cleaner (Remove Invalids)\n\nThis workflow ensures only valid emails remain in your Google Sheet. \n\n\n1. **If Email is Valid**  \n   - Checks the `status` field from the previous step.  \n   - Branches into:\n     - **Valid** → Keeps the email.  \n     - **Invalid/Duplicate** → Sends to deletion flow.\n\n2. **Sort Rows in Descending Order**  \n   - Ensures rows are deleted from bottom to top.  \n   - Prevents shifting issues when removing rows in Google Sheets.\n\n3. **Delete Invalid Emails**  \n   - Removes rows that contain invalid or duplicate emails from the **Email** sheet.\n\n4. **Return Nothing**  \n   - Clears out the deleted rows from memory (prevents carrying them further).\n\n5. **Merge**  \n   - Combines the **valid emails** (kept) with the cleaned dataset (without invalids).  \n   - Final result contains only **valid, unique emails**.\n\n",
+        "height": 816,
+        "width": 928,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1936,
+        -512
+      ],
+      "id": "4a440483-978d-413b-9897-16e1dc771587",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get List of Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get List of Emails": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Email is Valid": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sort Rows in Descending Order1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Invalid Emails": {
+      "main": [
+        [
+          {
+            "node": "Return Nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Return Nothing": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Verify Email with Hunter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Email with Hunter": {
+      "main": [
+        [
+          {
+            "node": "If Email is Active",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Email is Active": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get Invalid/Inactive Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Invalid/Inactive Email": {
+      "main": [
+        [
+          {
+            "node": "Sort Rows in Descending Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort Rows in Descending Order": {
+      "main": [
+        [
+          {
+            "node": "Delete Invalid/Inactive Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort Rows in Descending Order1": {
+      "main": [
+        [
+          {
+            "node": "Delete Invalid Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "If Email is Valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6ca48d79-9080-417f-a562-f0df8d106597",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "ISCBodliaIIekiea",
+  "tags": [
+    {
+      "updatedAt": "2025-09-04T06:03:09.498Z",
+      "createdAt": "2025-08-20T04:09:57.870Z",
+      "id": "SCZEAO3lLMzK9ddE",
+      "name": "HR & People Operations"
+    }
+  ]
+}

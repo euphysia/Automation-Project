@@ -1,0 +1,313 @@
+{
+  "name": "Offboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y",
+          "mode": "list",
+          "cachedResultName": "Employee Information",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y/edit#gid=0"
+        },
+        "event": "rowUpdate",
+        "options": {
+          "columnsToWatch": [
+            "Employment Status"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6ec335d1-8919-4d2a-98b4-1dfba6d8fb38",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "8JdPD9bM2EtI3oF5",
+          "name": "New Google Sheets Trigger Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Thank You & Exit Survey – We'd Love Your Feedback",
+        "message": "=<p> <img src=\"sample\" alt=\"Lilac Grove Logo\" width=\"600\" height=\"115\" style=\"display: block; margin-top: 10px;\" /> </p>\n\n<body style=\"font-family: Arial, sans-serif; color: #333; line-height: 1.6;\">\n    <p>Hi <strong>{{ $json['Full Name'] }}</strong>,</p>\n\n    <p>\n      As your time with <strong>Lilac Grove Kindergarten</strong> comes to a close, we want to thank you sincerely for all your contributions during your time with us. It’s been a pleasure having you as part of the team, and we truly appreciate the impact you've made.\n    </p>\n\n    <p>\n      To help us improve the employee experience, we’d be grateful if you could take a few minutes to complete our short <strong>exit survey</strong>:\n    </p>\n\n    <p>\n      <a href=\"https://forms.sample\" style=\"background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;\">\n        Complete Exit Survey\n      </a>\n    </p>\n\n    <p>\n      We wish you all the best in your next chapter — may it be full of success, new opportunities, and growth. Stay in touch!\n    </p>\n\n    <p>\n      Warm regards,<br>\n      <strong>Ruby</strong><br>\n      HR Department<br>\n      Lilac Grove Kindergarten<br>\n      <a href=\"mailto:email@sample.com\">email@sample.com</a> | 012-3456789\n    </p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        -144
+      ],
+      "id": "2afdf536-bde7-436d-b6a0-e0ce92cd4f23",
+      "name": "Send a message",
+      "webhookId": "1afc904c-4964-440d-8de6-9db3befe520f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Check If Employment Status is Inactive').item.json.Email }}",
+        "subject": "Asset Return Reminder – Offboarding Process",
+        "message": "=<p>Hi <strong>{{ $('If Asset has been Returned').item.json['Full Name'] }}</strong>,</p>      <p>       As part of the offboarding process at <strong>Lilac Grove Kindergarten</strong>, we kindly remind you to return the following company-issued items by <strong>{{ $json.formattedDate }}</strong>:     </p>      <ul>       <li>{{ $('If Asset has been Returned').item.json.Asset }}</li></ul>      <p>       Please return the items to <strong>HR Office</strong> or coordinate with us for a pickup/drop-off if needed.     </p>      <p>       If you have already returned the items, please disregard this message. Feel free to reply to this email if you need any assistance or clarification.     </p>      <p>       Thank you again for your time with us, and we wish you all the best in your next chapter.     </p>      <p>       Best regards,<br>       <strong>Ruby</strong><br>       HR Department<br>       Lilac Grove Kindergarten<br>       <a href=\"mailto:email@sample.com\">email@sample.com</a> | 012-3456789     </p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1072,
+        16
+      ],
+      "id": "1744a862-0b27-4b13-b217-4695a8e9d228",
+      "name": "Send a message1",
+      "webhookId": "0258cd93-a61b-4860-b18d-18fd1341a0ca",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const serial = $input.first().json['Asset Due']; // e.g. 45269\n\n// Convert serial number to JS Date\nconst milliseconds = (serial - 25569) * 86400 * 1000;\nconst date = new Date(milliseconds);\n\n// Format: 8-Aug-2025\nconst day = date.getDate();\nconst months = [\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"Jun\", \"Jul\", \"Aug\", \"Sep\", \"Oct\", \"Nov\", \"Dec\"];\nconst month = months[date.getMonth()];\nconst year = date.getFullYear();\nconst formatted = `${day}-${month}-${year}`;\n\nreturn [{ formattedDate: formatted }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        16
+      ],
+      "id": "4f1f407c-7c09-4175-b1d5-e1c1b70927cb",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "content": "## Google Sheets Trigger\n\nThis workflow starts automatically when the **\"Employment Status\"** column in the Google Sheet is **updated**.  \n\n",
+        "height": 352,
+        "width": 288,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -176
+      ],
+      "id": "1acbdf24-43da-45f8-abed-0c88da8d70d5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Exit Survey Email Workflow\n\nSends a thank you and exit survey email when an employee’s status changes to **Inactive**.\n",
+        "height": 496,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -320
+      ],
+      "id": "c2daa48c-456b-400b-ae71-0dcc67f0b5c0",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Asset Return Reminder Workflow\n\nChecks if an employee’s assigned asset has been **Returned**.  \nIf it still pending, it sends them an **asset return reminder email** with the due date included.\n",
+        "height": 336,
+        "width": 592
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -160
+      ],
+      "id": "d5163449-bd22-4137-ac5c-4c1b5d82983b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "11c4ff08-c9a4-4a88-913a-13dd41eecdd4",
+              "leftValue": "={{ $('Check If Employment Status is Inactive').item.json['Asset Status'] }}",
+              "rightValue": "Returned",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        704,
+        0
+      ],
+      "id": "d39deb6b-c74d-411b-be69-71e69ddbf2d0",
+      "name": "If Asset has been Returned"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Employment Status'] }}",
+                    "rightValue": "Inactive",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a99a1ea3-29ca-40bc-b824-9b647e51e0e6"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        272,
+        0
+      ],
+      "id": "54b196a0-0e06-45fb-a9b7-7e26bd509786",
+      "name": "Check If Employment Status is Inactive"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check If Employment Status is Inactive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        []
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Asset has been Returned": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Employment Status is Inactive": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If Asset has been Returned",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "37955a1c-c009-4685-b07d-06a6a9e709fb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "UXXlSKEgOj4KhVlI",
+  "tags": [
+    {
+      "updatedAt": "2025-09-04T06:03:09.498Z",
+      "createdAt": "2025-08-20T04:09:57.870Z",
+      "id": "SCZEAO3lLMzK9ddE",
+      "name": "HR & People Operations"
+    }
+  ]
+}

@@ -1,0 +1,357 @@
+{
+  "name": "Anonymous Employee Feedback Collection, Sentiment Analysis, and Weekly Digest for HR",
+  "nodes": [
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        560,
+        0
+      ],
+      "id": "7203351c-0d69-4313-beba-b803e354a1d0",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1tJ5ei7XectBTsgxwYkE2gYJH4NaBWpUpIpAeWKI8Q2E",
+          "mode": "list",
+          "cachedResultName": "Company Feedback (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tJ5ei7XectBTsgxwYkE2gYJH4NaBWpUpIpAeWKI8Q2E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1037386806,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tJ5ei7XectBTsgxwYkE2gYJH4NaBWpUpIpAeWKI8Q2E/edit#gid=1037386806"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Done?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        272,
+        0
+      ],
+      "id": "d9213ded-fa3c-4726-bae5-519ca822da40",
+      "name": "Get Employee Feedbacks of The Week",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                5
+              ],
+              "triggerAtHour": 12
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "bc6fce9f-e9f8-4921-ac77-ba763258f94a",
+      "name": "Trigger Once A Week"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1tJ5ei7XectBTsgxwYkE2gYJH4NaBWpUpIpAeWKI8Q2E",
+          "mode": "list",
+          "cachedResultName": "Company Feedback (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tJ5ei7XectBTsgxwYkE2gYJH4NaBWpUpIpAeWKI8Q2E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1037386806,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tJ5ei7XectBTsgxwYkE2gYJH4NaBWpUpIpAeWKI8Q2E/edit#gid=1037386806"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $json.Timestamp }}",
+            "Done?": "Yes"
+          },
+          "matchingColumns": [
+            "Timestamp"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "How satisfied were you with the company?",
+              "displayName": "How satisfied were you with the company?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "How helpful is the environment do you think for your job?",
+              "displayName": "How helpful is the environment do you think for your job?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "What do you like about this company?",
+              "displayName": "What do you like about this company?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Additional feedback on the company",
+              "displayName": "Additional feedback on the company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Done?",
+              "displayName": "Done?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        176
+      ],
+      "id": "1a005e0a-d149-475e-9e92-a5958e6b7ca2",
+      "name": "Update Response Status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "assistant",
+        "assistantId": {
+          "__rl": true,
+          "value": "asst_YZmMdLIp18dxhinAWZKjhRvw",
+          "mode": "list",
+          "cachedResultName": "Assist with output"
+        },
+        "prompt": "define",
+        "text": "=Do a sentiment analysis for the employee response given in \n\n{{ $json.data.map(r => JSON.stringify(r, null, 2)).join(\"\\n\\n\") }}\n\nSummarize the sentiment of employee feedback in a simple and clear way. Format the results in HTML so they can be shared with HR as an analysis of how employees feel about the company.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        848,
+        0
+      ],
+      "id": "52e01840-0051-43c2-956c-1fcde33863c9",
+      "name": "Sentiment Analysis Agent",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "info@example.com",
+        "subject": "Analysis of this week's feedback",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "118dc5ca-015e-48c5-a135-b492b39873b3",
+      "name": "Send Analysis Result to HR",
+      "webhookId": "49bafb59-f33f-4ef8-a895-6109f8c82c86",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Schedule Trigger\n\nThis workflow starts automatically  every week on Friday.\n\n",
+        "height": 336,
+        "width": 224,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -160
+      ],
+      "id": "b56c708b-72d8-46e9-a4cb-f64e5744ff8e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "![Supern8n](https://supern8n.com/logo-icon.png)\n## Weekly Employee Feedback Tracker\n\nThis workflow collects employee feedback responses from **Google Sheets**, aggregates them for analysis, and updates the sheet to mark completed entries.\n\n1. **Get Employee Feedbacks of The Week** (Google Sheets)  \n   Fetches feedback responses from a Google Sheet.\n\n2. **Aggregate**  \n   Aggregates all feedback data for reporting or further processing.\n\n3. **Update Response Status** (Google Sheets)  \n   Marks each processed response as \"Done\" in the Google Sheet.\n",
+        "height": 800,
+        "width": 592
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        176,
+        -432
+      ],
+      "id": "d94c0aeb-7eb2-4221-baae-a92d7bbdea7e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Employee Feedback Sentiment Analysis\n\nAnalyzes employee feedback using AI sentiment analysis and sends the summarized results to HR via email.\n\n1. **Sentiment Analysis Agent** (OpenAI)  \n   Performs sentiment analysis on employee responses and generates a clear, HTML-formatted summary.\n\n2. **Send Analysis Result to HR** (Gmail)  \n   Sends the sentiment analysis report to HR as an email.\n\n",
+        "height": 528,
+        "width": 592
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        -320
+      ],
+      "id": "e44055e6-6869-4c9a-9356-63af55b234ad",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Sentiment Analysis Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Employee Feedbacks of The Week": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Response Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Once A Week": {
+      "main": [
+        [
+          {
+            "node": "Get Employee Feedbacks of The Week",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentiment Analysis Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Analysis Result to HR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "731b76f9-a543-491a-b138-4a7891e263bc",
+  "meta": {
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "5Kkdq9Fa4RYQTv46",
+  "tags": [
+    {
+      "updatedAt": "2025-09-04T06:03:09.498Z",
+      "createdAt": "2025-08-20T04:09:57.870Z",
+      "id": "SCZEAO3lLMzK9ddE",
+      "name": "HR & People Operations"
+    }
+  ]
+}

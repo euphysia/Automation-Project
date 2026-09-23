@@ -1,0 +1,922 @@
+{
+  "name": "Recruitment and hiring",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk",
+          "mode": "list",
+          "cachedResultName": "Job Application Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 180401176,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit#gid=180401176"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        624,
+        432
+      ],
+      "id": "121e2961-75d8-4c48-a952-0b43ef084965",
+      "name": "Recruitment Responses",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "8rSVTlhTWC17N59N",
+          "name": "Account 1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1I4HM-VwwwJUYE7id2_HF1-oYTMr8V0yfLeMkJfK73zI",
+          "mode": "list",
+          "cachedResultName": "Job Requirements",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1I4HM-VwwwJUYE7id2_HF1-oYTMr8V0yfLeMkJfK73zI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1I4HM-VwwwJUYE7id2_HF1-oYTMr8V0yfLeMkJfK73zI/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Position",
+              "lookupValue": "={{ $('Recruitment Responses').item.json['Position '] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1520,
+        656
+      ],
+      "id": "42212f89-9646-4f2b-a507-bf4378825f75",
+      "name": "Read Job Requirements",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk",
+          "mode": "list",
+          "cachedResultName": "Job Application Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 180401176,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit#gid=180401176"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Timestamp",
+              "lookupValue": "={{ $('Recruitment Responses').item.json.Timestamp }}"
+            },
+            {
+              "lookupColumn": "Full Name",
+              "lookupValue": "={{ $('Recruitment Responses').item.json['Full Name'] }}"
+            },
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $('Recruitment Responses').item.json.Email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1648,
+        656
+      ],
+      "id": "0d69ac66-64d1-45dc-b2e6-a0da92d46d1d",
+      "name": "Read position from response sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk",
+          "mode": "list",
+          "cachedResultName": "Job Application Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 180401176,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit#gid=180401176"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}",
+            "Summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}",
+            "row_number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('row_number__using_to_match_', ``, 'number') }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Resume",
+              "displayName": "Resume",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Position ",
+              "displayName": "Position ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1776,
+        656
+      ],
+      "id": "7a116e58-80a4-4c7d-9aa4-b4fadc550db8",
+      "name": "Update the Status in Responses Spreadsheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const link = $json[\"Resume\"]; // Replace with your actual column name\nlet fileId = null;\n\n// Case 1: link format like /file/d/ID/\nlet match = link.match(/\\/d\\/(.*?)\\//);\nif (match && match[1]) {\n  fileId = match[1];\n}\n\n// Case 2: link format like ?id=ID\nif (!fileId) {\n  match = link.match(/id=([^&]+)/);\n  if (match && match[1]) {\n    fileId = match[1];\n  }\n}\n\nreturn [\n  {\n    json: {\n      fileId\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        432
+      ],
+      "id": "b5b2e7bb-85d1-43b1-a80f-2d157c781166",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.fileId }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1072,
+        432
+      ],
+      "id": "c5c81464-86f3-4e0f-924e-d3b6f98c6381",
+      "name": "Download Resume",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "fv7f4nSTlqNNDBOF",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=You are an experienced HR recruiter.\nA new candidate has applied for a job.\n\nYour task is to:\n\n1. Read the candidate’s resume (text has been extracted already).\n2.Identify the position they applied for (from the form submission).\n3. Look up the job requirements for that position (from the job requirements spreadsheet).\n4. Compare the candidate’s background with the job requirements.\n5. Decide if they should be shortlisted or not then update the status of the candidate in the response spreadsheet. (Either 'Shortlisted' or 'Rejected')\n6. Write a brief explanation for your decision as a summary in the response spreadsheet. (Add new column if it doesnt have one that match)"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1584,
+        432
+      ],
+      "id": "6f9ae143-24b7-401f-8ca5-c4e4435ab201",
+      "name": "HR Recruiter"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "=",
+          "mode": "id",
+          "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2576,
+        400
+      ],
+      "id": "e9c21cdb-0953-4b71-b2f9-b082efe7e508",
+      "name": "Get Availability",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "KNzynBxeY6th9gHP",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "=",
+          "mode": "id",
+          "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $('Get Applicant Status').item.json.Email }}"
+          ],
+          "conferenceDataUi": {
+            "conferenceDataValues": {
+              "conferenceSolution": "hangoutsMeet"
+            }
+          },
+          "summary": "=Lilac Grov Interview - {{ $('Get Applicant Status').item.json['Full Name'] }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2704,
+        400
+      ],
+      "id": "8280ac92-b37d-4064-9844-bed82daa5240",
+      "name": "Schedule Interview",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "KNzynBxeY6th9gHP",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get Applicant Status').item.json.Email }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', `Format it using HTML with proper paragraph tags and line breaks using <p> and <br>.`, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        2832,
+        400
+      ],
+      "id": "d9138a42-8abf-415b-b86d-01d339352cbc",
+      "name": "Send Email for Shortlisted",
+      "webhookId": "7a2d978f-306f-43af-8a0e-f8f99cc4cd67",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "=Lilac Grov Kindergarten Application Update – {{ $json['Full Name'] }}",
+        "message": "=<p><br>Dear {{ $json['Full Name'] }},</p>  <p> Thank you very much for taking the time to apply for the <strong>{{ $json['Position '] }}</strong> position at <strong>Lilac Grove Kindergarten</strong>. </p>  <p> We truly appreciate your interest in joining our team and the effort you put into your application. After careful consideration, we regret to inform you that we will not be moving forward with your application at this time. </p>  <p> This decision was not easy, as we had many strong applicants. We genuinely value your interest and encourage you to apply for any future openings that match your skills and experience. </p>  <p> Wishing you all the best in your job search and future endeavors. </p>  <p> Warm regards,<br>Ruby<br> HR Department<br> Lilac Grove Kindergarten </p>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2704,
+        784
+      ],
+      "id": "1ab7ae49-3b55-4beb-a90f-8e0c2369d1db",
+      "name": "Send Email for Rejected",
+      "webhookId": "742bbad3-dc75-4372-8d7c-c675551ada03",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk",
+          "mode": "list",
+          "cachedResultName": "Job Application Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 180401176,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit#gid=180401176"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Timestamp",
+              "lookupValue": "={{ $('Recruitment Responses').item.json.Timestamp }}"
+            },
+            {
+              "lookupColumn": "Full Name",
+              "lookupValue": "={{ $('Recruitment Responses').item.json['Full Name'] }}"
+            },
+            {
+              "lookupColumn": "Position ",
+              "lookupValue": "={{ $('Recruitment Responses').item.json['Position '] }}"
+            },
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $('Recruitment Responses').item.json.Email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2032,
+        432
+      ],
+      "id": "78fe9e41-8650-4679-9f5d-6a8750da37d5",
+      "name": "Get Applicant Status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk",
+          "mode": "list",
+          "cachedResultName": "Job Application Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 180401176,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EaIwkWhOlf0zYrozLMuHDDAxmPG3Tbotjb8aFI87Pyk/edit#gid=180401176"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Timestamp",
+              "lookupValue": "={{ $('Get Applicant Status').item.json.Timestamp }}"
+            },
+            {
+              "lookupColumn": "Full Name",
+              "lookupValue": "={{ $('Get Applicant Status').item.json['Full Name'] }}"
+            },
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $('Get Applicant Status').item.json.Email }}"
+            },
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "={{ $('Get Applicant Status').item.json.Status }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2960,
+        400
+      ],
+      "id": "94edcf9e-45b4-4e52-8d26-8fa919f63242",
+      "name": "Get Applicant Info",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Recruitment Responses Workflow Trigger\n\n## Overview\nThis node triggers the workflow whenever a new job application is submitted via the Google Form. It monitors the connected Google Sheet for any new rows added.\n\n",
+        "height": 496,
+        "width": 272,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        528,
+        112
+      ],
+      "id": "0b8c2f54-4cfb-49f4-8fa5-1eec75af77f8",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Resume Processing Workflow\n\n## Overview\nThis part of the workflow handles the extraction of text from applicant resumes submitted via Google Forms. It performs the following steps:\n\n\n### 1. Code\n  - Extracts the Google Drive file ID from the resume link submitted in the form.\n\n### 2. Download Resume\n  - Downloads the resume file from Google Drive using the `fileId` extracted in the previous node.\n\n### 3. Extract Resume PDF\n  - Extracts text content from the downloaded PDF resume.",
+        "height": 656,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        816,
+        -48
+      ],
+      "id": "3c36310f-a483-464b-8195-fd4d8bd005fb",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2320,
+        704
+      ],
+      "id": "c49d6e91-ace6-415c-bd06-ea5037c04d50",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f98533f2-d8ad-4dd3-91c1-ec2521536ba4",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Shortlisted",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        432
+      ],
+      "id": "bfd4e370-2381-4d01-8686-bc7c9ffff7e6",
+      "name": "If Candidate is Shortlisted"
+    },
+    {
+      "parameters": {
+        "content": "## Resume Screening\n\n## Overview\nIt uses the applicant’s form submission, resume text, and job requirements to decide if the candidate should be shortlisted or rejected.\n\n### 1. HR Recruiter (AI Node)\n  - Acts as an AI recruiter to review the candidate.\n  - Steps performed:\n    1. Read the candidate’s extracted resume text.\n    2. Identify the position applied for.\n    3. Retrieve job requirements for the position.\n    4. Compare candidate background to requirements.\n    5. Decide status: \"Shortlisted\" or \"Rejected\".\n    6. Generate a summary explanation for the decision.",
+        "height": 848,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        -16
+      ],
+      "id": "7e3c0a68-ec7f-42a4-89bb-f925c40f9f75",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Conditional Workflow: Shortlisted Candidates\n\n## Overview\nThis part of the workflow checks the applicant's status after the HR Recruiter AI has reviewed the application. Depending on whether the candidate is shortlisted, the workflow can trigger further actions\n\n### 1. Get Applicant Status\n  - Retrieves the latest status of the applicant from the response spreadsheet.\n\n### 2. If Candidate is Shortlisted\n  - Checks if the candidate’s status is `Shortlisted`.\n  - **True branch:** Candidate is shortlisted → trigger next steps (e.g., interview scheduling, sending email).\n  - **False branch:** Candidate is not shortlisted → end or trigger rejection workflow.",
+        "height": 672,
+        "width": 496
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        -48
+      ],
+      "id": "58966a1d-8093-47ff-aef0-ba3560a50499",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## If Rejected\n\nSend Rejection Email to the applicant.",
+        "height": 288,
+        "width": 304,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2624,
+        656
+      ],
+      "id": "449990ab-23e2-4da2-a40d-3f59f69ed9f5",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## If Shortlisted\n\n## Overview\nAutomatically schedules interviews for candidates who have been shortlisted.\n\n### 1. Interview Scheduler \n  - Acts as a virtual HR assistant.\n  - Reads available calendar slots, applicant information, and scheduling constraints.\n  - Determines the best time for the interview.\n  - Drafts the email content for the shortlisted candidate.\n",
+        "height": 752,
+        "width": 560,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2528,
+        -192
+      ],
+      "id": "8d1099a6-cab4-45cf-9b86-e54e8bd2445c",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Hi, please get my availability for the 2 weeks starting 3 days from {{ $now }} to schedule online interview with applicant. My working hours is 10am - 4pm. Dont schedule during weekends and public holiday. Applicant infor can be found in the google sheet and just proceed with the scheduling.",
+        "options": {
+          "systemMessage": "=You are a helpful, professional HR assistant for Lilac Grove Kindergarten. Your job is to schedule interviews with applicants based on the available time slots provided to you.\n\n🕘 WORKING HOURS\n- The interviewer is available **Monday to Friday**, from **10:00 AM to 4:00 PM**.\n- Do **not schedule** interviews on **weekends (Saturday or Sunday) and public holidays**.\n- Interviews must be scheduled **within working hours** only.\n- Interview will be 30 minutes per session\n\n📅 INTERVIEW SCHEDULING FLOW:\n1. You will receive a list of **available time slots** from the Calendar node.\n\n2. Your task is to:\n   - Schedule an interview with the applicant in the calendar (Applicant infor can be found in the google sheet) and send email congratulating them for being shortlisted and an interview has been scheduled for them. If need to reschedule ask them to reply the email and someone will contact them shortly.\n  \n3. Always be polite, clear, and helpful.\n\n📌 NOTES:\n- If all slots are taken, apologize and let them know someone will follow up to reschedule.\n\nTONE:\n- Friendly, supportive, and respectful.\n- Avoid robotic responses.\n- Use short and professional messages with polite phrasing.\n\nYour goal is to ensure smooth and respectful coordination between the applicant and HR.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        2640,
+        176
+      ],
+      "id": "eed232db-4303-4fe1-aa75-69c8ef03061f",
+      "name": "Interview Scheduler"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        432
+      ],
+      "id": "85f7bbc7-19cb-4dc1-a7b3-7ffc6f16d06d",
+      "name": "Extract Text from Resume"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Recruitment Responses": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Job Requirements": {
+      "ai_tool": [
+        [
+          {
+            "node": "HR Recruiter",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read position from response sheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "HR Recruiter",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update the Status in Responses Spreadsheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "HR Recruiter",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Download Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Resume": {
+      "main": [
+        [
+          {
+            "node": "Extract Text from Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HR Recruiter": {
+      "main": [
+        [
+          {
+            "node": "Get Applicant Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Availability": {
+      "ai_tool": [
+        [
+          {
+            "node": "Interview Scheduler",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Interview": {
+      "ai_tool": [
+        [
+          {
+            "node": "Interview Scheduler",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email for Shortlisted": {
+      "ai_tool": [
+        [
+          {
+            "node": "Interview Scheduler",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Applicant Status": {
+      "main": [
+        [
+          {
+            "node": "If Candidate is Shortlisted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Applicant Info": {
+      "ai_tool": [
+        [
+          {
+            "node": "Interview Scheduler",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "HR Recruiter",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Interview Scheduler",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Candidate is Shortlisted": {
+      "main": [
+        [
+          {
+            "node": "Interview Scheduler",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Email for Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from Resume": {
+      "main": [
+        [
+          {
+            "node": "HR Recruiter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "845eef7c-429c-4ed2-b7a1-976b13ce7135",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "UIsGeSj4wTKZlrqc",
+  "tags": [
+    {
+      "updatedAt": "2025-09-04T06:03:09.498Z",
+      "createdAt": "2025-08-20T04:09:57.870Z",
+      "id": "SCZEAO3lLMzK9ddE",
+      "name": "HR & People Operations"
+    }
+  ]
+}

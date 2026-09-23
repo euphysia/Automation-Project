@@ -1,0 +1,501 @@
+{
+  "name": "Generate Employment Verification Letter",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1riYqm65MLBqHslJeg82jZNtppeJILF2f-95feYXmYE4",
+          "mode": "list",
+          "cachedResultName": "Application for Employee Verification Letter (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1riYqm65MLBqHslJeg82jZNtppeJILF2f-95feYXmYE4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 786250742,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1riYqm65MLBqHslJeg82jZNtppeJILF2f-95feYXmYE4/edit#gid=786250742"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -32
+      ],
+      "id": "3e2d3bbf-7214-4c8a-8d08-1bc359e55d9b",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "8JdPD9bM2EtI3oF5",
+          "name": "New Google Sheets Trigger Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y",
+          "mode": "list",
+          "cachedResultName": "Employee Information",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Full Name",
+              "lookupValue": "={{ $json['Full Name'] }}"
+            },
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.Email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        128,
+        -32
+      ],
+      "id": "c0d54c84-21e6-47bd-9a3c-430afe1a2c9a",
+      "name": "Verify Employment",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "17GbuUghMEvZ2IDFxo6_JYPeRAQ8t1369wYUF97x6lo8",
+          "mode": "list",
+          "cachedResultName": "Employment Verification Template",
+          "cachedResultUrl": "https://docs.google.com/document/d/17GbuUghMEvZ2IDFxo6_JYPeRAQ8t1369wYUF97x6lo8/edit?usp=drivesdk"
+        },
+        "name": "=Employment Verification of {{ $json['Full Name'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        320,
+        -32
+      ],
+      "id": "3e3c957f-aace-4234-9620-421336642938",
+      "name": "Copy file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "fv7f4nSTlqNNDBOF",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "[Current date]",
+              "replaceText": "={{$today.toFormat(\"d MMMM yyyy\")}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Employee Full Name]",
+              "replaceText": "={{ $('Verify Employment').item.json['Full Name'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Job Title]",
+              "replaceText": "={{ $('Verify Employment').item.json['Job Title'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Department Name]",
+              "replaceText": "={{ $('Google Sheets Trigger').item.json.Department }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Full-Time / Part-Time / Contract]",
+              "replaceText": "={{ $('Verify Employment').item.json['Employment Type'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Start Date]",
+              "replaceText": "={{ $('Verify Employment').item.json['Start Date'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Active / On Leave / etc.]",
+              "replaceText": "={{ $('Verify Employment').item.json.Status }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Purpose – e.g. visa application / housing loan / general reference]",
+              "replaceText": "={{ $('Google Sheets Trigger').item.json['Purpose of The Letter'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Employee Name]",
+              "replaceText": "={{ $('Verify Employment').item.json['Full Name'] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        544,
+        -32
+      ],
+      "id": "5cf9bcc0-4b99-4259-8da9-f0730ae6bcd6",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "Kmt3shlJHXKefs34",
+          "name": "Google Docs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.documentId }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        768,
+        -32
+      ],
+      "id": "8094d003-e62a-40c6-9573-ec9db276ec11",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "fv7f4nSTlqNNDBOF",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Verify Employment').item.json.Email }}",
+        "subject": "=Employment Verification Letter - {{ $('Verify Employment').item.json['Full Name'] }}",
+        "message": "=<p>Hi {{ $('Verify Employment').item.json['Full Name'] }},</p>\n\n<p>\n  Attached is your <strong>Employment Verification Letter</strong> as requested for the purpose of {{ $('Google Sheets Trigger').item.json['Purpose of The Letter'] }}.\n</p>\n\n<p>\n  Please review the document and let us know if you need any changes or additional details. We're happy to support you.\n</p>\n\n<p>\n  Wishing you all the best with your application!\n</p>\n\n<p>\n  Warm regards,<br>\n  Jane<br>\n  HR Assistant<br>\n  Lilac Grov Kindergarten\n</p>\n",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        992,
+        -32
+      ],
+      "id": "9259cf81-b7b7-4418-8a65-796c2387d7e4",
+      "name": "Send a message",
+      "webhookId": "3cc70df6-37b7-4c3e-8b5b-d2451dfa7c67",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1riYqm65MLBqHslJeg82jZNtppeJILF2f-95feYXmYE4",
+          "mode": "list",
+          "cachedResultName": "Application for Employee Verification Letter (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1riYqm65MLBqHslJeg82jZNtppeJILF2f-95feYXmYE4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 786250742,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1riYqm65MLBqHslJeg82jZNtppeJILF2f-95feYXmYE4/edit#gid=786250742"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Verify Employment').item.json.Email }}",
+            "Letter Status (for HR use)": "SENT",
+            "Timestamp": "={{ $('Google Sheets Trigger').item.json.Timestamp }}"
+          },
+          "matchingColumns": [
+            "Timestamp"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Purpose of The Letter",
+              "displayName": "Purpose of The Letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Letter Status (for HR use)",
+              "displayName": "Letter Status (for HR use)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1216,
+        -32
+      ],
+      "id": "69374e75-eab2-443f-a6e0-23d8d88d04a7",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Employee Verification Letter Trigger\n\nStarts the workflow when a **new row is added** to the Google Sheet  \n“Application for Employee Verification Letter (Responses)”.\n",
+        "height": 368,
+        "width": 272,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -240
+      ],
+      "id": "b85350a2-fb25-4f81-a7af-b305205f883e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Employment Verification Letter Workflow\n\nThis workflow automates the process of generating an **Employment Verification Letter** in Google Docs, based on employee data from Google Sheets.\n\n### Steps\n\n1. **Verify Employment (Google Sheets)**\n   - Looks up the employee in the **Employee Information** sheet.  \n   - Matches by `Full Name` and `Email`.\n\n2. **Copy File (Google Drive)**\n   - Creates a copy of the **Employment Verification Template** in Google Drive.  \n   - The new file is named:  \n     `Employment Verification of {{ Full Name }}`\n\n3. **Update Document (Google Docs)**\n   - Replaces placeholders in the copied template with real data  \n\n4. **Download File (Google Drive)**\n   - Exports the updated document as a **PDF**.  \n   - This PDF is now ready to be shared with the employee or requester.\n\n---\n\n**Result**: A personalized Employment Verification Letter in PDF format, created automatically from Google Sheets input.\n",
+        "height": 800,
+        "width": 816
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        80,
+        -672
+      ],
+      "id": "f12b6c46-9fd7-42a4-9404-b20ec537f7a8",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Send Email and Verification Letter to the Requester\n1. Email is sent to the employee with the attached PDF.\n2. After sending, the Google Sheet row is updated automatically to indicate that the letter has been sent.\n",
+        "height": 320,
+        "width": 624
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        912,
+        -192
+      ],
+      "id": "83fec902-ed7e-4420-af85-1a4214b50422",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Verify Employment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Employment": {
+      "main": [
+        [
+          {
+            "node": "Copy file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0a8982f0-b592-4143-afbd-ae4b10de20ac",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "ubI3x17cdOzoWFRv",
+  "tags": [
+    {
+      "updatedAt": "2025-09-04T06:03:09.498Z",
+      "createdAt": "2025-08-20T04:09:57.870Z",
+      "id": "SCZEAO3lLMzK9ddE",
+      "name": "HR & People Operations"
+    }
+  ]
+}

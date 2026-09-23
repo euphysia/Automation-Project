@@ -1,0 +1,340 @@
+{
+  "name": "General Notifications & Employee Engagement",
+  "nodes": [
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Get general holiday event in Google Calendar",
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "en.malaysia#holiday@group.v.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Holidays in Malaysia"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -800,
+        432
+      ],
+      "id": "4e8c6f21-18b9-43cb-ae37-18dead94d61b",
+      "name": "Get General Important Date",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "KNzynBxeY6th9gHP",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0",
+          "mode": "list",
+          "cachedResultName": "Important Company Dates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 112482946,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZyGBHZb2OuipWJCOqFdC2o3KROtClTcvIt7yzrudRI0/edit#gid=112482946"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        -672,
+        432
+      ],
+      "id": "a5fe5201-af01-47c4-9c21-d7c49a4fcce6",
+      "name": "Get Company Important Date",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 9
+            }
+          ]
+        }
+      },
+      "id": "4b833188-256a-4412-b0d2-78662b0db370",
+      "name": "Daily Trigger at 9am",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -928,
+        432
+      ],
+      "id": "b5b8674b-c9d8-4298-a86d-b45b33fbd4fb",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "TuHIL5MzXz7lokwc",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y",
+          "mode": "list",
+          "cachedResultName": "Employee Information",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KirXoXjeWegQ5NSobgdJkNXvIrFTSRtxqpHKXlWhC4Y/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        -544,
+        432
+      ],
+      "id": "e4df6ecc-6bc4-4d2a-b270-eadd8f3ec381",
+      "name": "Get Employee Birthday",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -416,
+        432
+      ],
+      "id": "069aaf06-2ced-4a3d-a1f5-f16e3b5136e0",
+      "name": "Send Personal Birthday Email",
+      "webhookId": "8408ef09-4641-4e01-aec5-c22f74aae683",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -288,
+        432
+      ],
+      "id": "45c4cf18-c0cd-46fd-bf4d-0b3cd04a9522",
+      "name": "Send Email to All Staff",
+      "webhookId": "b5381739-3f75-4c99-9c7e-6c16754d8818",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=The date today is {{ $today }}",
+        "options": {
+          "systemMessage": "You are an internal HR assistant responsible for sending automated employee engagement messages via email from HR Team.\n\nYour tasks include 3 things you must do:\n\n1. 🎉 Birthday Messages\n- Read today’s or upcoming birthdays from the employee information sheet. (check for the birthday column but ignore the year)\n\n- If it's today, send a personalized birthday message to the person. (email can be found in employee information sheet)\n\n- Do not email anyone else.\n\n- Use warm, friendly, and uplifting language.\n\n2. Company Event Reminders\nLook for events listed in the company events spreadsheet.\n\n- If the event is 1 week away, send a reminder to the whole team through email.\n\n- If the event is today, send a “happening today” message using 'email to all stuff' tool.\n\n- Use a tone that builds excitement and encourages participation.\n\n3. Holiday Greetings\nFor public holidays, send a warm holiday greeting to all staff.\n\n- Get the general holiday from the calendar for the day.\n\n- If have holiday, send an email wishing them a happy holiday and encourage rest and recharge.\n\n- If no holiday then ignore.\n\nPlease select the correct email template and recipients based on the context. Format the email in HTML with appropriate <br> or <p> tags for line breaks.\nOnly send relevant messages — do not repeat or send unnecessary ones."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -704,
+        208
+      ],
+      "id": "d3c0e626-a8b8-4ea1-b138-c8f63a2c4a59",
+      "name": "Event Retrieval Agent"
+    },
+    {
+      "parameters": {
+        "content": "## Daily Trigger\n\nThis workflow starts automatically every day at **9:00 AM**.  ",
+        "height": 304,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        48
+      ],
+      "id": "3894ce58-040b-47be-9588-085fa0ea7032",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## HR Engagement Workflow\n\nThis workflow automates HR email communications by pulling data from Google Sheets and Google Calendar.  \n\n### **What it does**\n1. **Birthday Messages**  \n   - Checks the employee sheet for birthdays.  \n   - If today is someone’s birthday → sends a **personalized birthday email** only to that employee.  \n\n2. **Company Event Reminders**  \n   - Looks up company events in the \"Important Company Dates\" sheet.  \n   - If an event is **1 week away** → sends a reminder to all staff.  \n   - If an event is **today** → sends a \"happening today\" email to all staff.  \n\n3. **Holiday Greetings**  \n   - Pulls general holidays from the Google Calendar (Malaysia).  \n   - If today is a holiday → sends a **holiday greeting email** to all staff.  \n\n### **How it works**\n- Uses Google Sheets (employee birthdays & company events).  \n- Uses Google Calendar (public holidays).  \n- Uses OpenAI for drafting natural, friendly, and engaging email messages.  \n- Sends emails via Gmail (to individual employees or to all staff).   \n",
+        "height": 976,
+        "width": 816
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        -368
+      ],
+      "id": "b41472c1-5dba-4c50-80d7-162d041f213c",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get General Important Date": {
+      "ai_tool": [
+        [
+          {
+            "node": "Event Retrieval Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Company Important Date": {
+      "ai_tool": [
+        [
+          {
+            "node": "Event Retrieval Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger at 9am": {
+      "main": [
+        [
+          {
+            "node": "Event Retrieval Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Event Retrieval Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Employee Birthday": {
+      "ai_tool": [
+        [
+          {
+            "node": "Event Retrieval Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Personal Birthday Email": {
+      "ai_tool": [
+        [
+          {
+            "node": "Event Retrieval Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to All Staff": {
+      "ai_tool": [
+        [
+          {
+            "node": "Event Retrieval Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fcf09b07-5eae-45a3-a8f2-a3cb4d08d173",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "smqo1Iuop2eKHyFB",
+  "tags": [
+    {
+      "updatedAt": "2025-09-04T06:03:09.498Z",
+      "createdAt": "2025-08-20T04:09:57.870Z",
+      "id": "SCZEAO3lLMzK9ddE",
+      "name": "HR & People Operations"
+    }
+  ]
+}

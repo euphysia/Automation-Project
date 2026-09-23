@@ -1,0 +1,406 @@
+{
+  "name": "Performance Review Scheduling",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const today = new Date();\nconst dueDate = new Date(today);\ndueDate.setDate(dueDate.getDate() + 14);\n\nreturn [{\n  json: {\n    Today: today.toISOString().split(\"T\")[0],\n    DueDate: dueDate.toISOString().split(\"T\")[0]\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -16
+      ],
+      "id": "d96904c9-5594-40f8-8814-08b7ffa3d656",
+      "name": "Set Due Date"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI",
+          "mode": "list",
+          "cachedResultName": "Bi-Annual Company Department Review Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 841946091,
+          "mode": "list",
+          "cachedResultName": "Checklist",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit#gid=841946091"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        272,
+        -16
+      ],
+      "id": "3a5a5063-91fd-474f-9751-7fff460df64b",
+      "name": "Get Department Manager Email",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "6-Month Performance Review for Your Team",
+        "message": "=<p>Hi <strong>{{ $json['Full Name'] }}</strong>,</p>      <p>       This is a friendly reminder that the <strong>biannual performance review cycle</strong> is now open.       As the manager of your team, we kindly ask you to complete the performance reviews for your team members who are due.     </p>      <p>       Please use the link below to access the performance review form:     </p>      <p>       <a href=\"https://forms.gle/jDxuG44qog4ZnAsZ6\" style=\"background-color: #007bff; color: white; padding: 10px 18px; text-decoration: none; border-radius: 4px;\">         Complete Performance Review       </a>     </p>      <p>       <strong>Due Date:</strong> {{ $('Set Due Date').item.json.DueDate }}<br>       We recommend completing the reviews as soon as possible to stay on track with HR timelines.     </p>      <p>       If you have any questions or need help accessing the form, feel free to reach out to us.     </p>      <p>       Thank you for your attention and support in maintaining a consistent and meaningful review process.     </p>      <p>       Best regards,<br>       <strong>Ruby</strong><br>       HR Department<br>       Lilac Grove Kindergarten<br>       <a href=\"mailto: example@gmail.com\">example@gmail.com</a>     </p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        -16
+      ],
+      "id": "32ef3932-8224-4b87-b664-50a998c24d2a",
+      "name": "Distribute Review Form Through Email",
+      "webhookId": "c9062cbf-f7e9-4844-ac55-14a5acde38e3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "l1CeWcTnSGw8BPnY",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI",
+          "mode": "list",
+          "cachedResultName": "Bi-Annual Company Department Review Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 841946091,
+          "mode": "list",
+          "cachedResultName": "Checklist",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nIXB6Mbv4FnIOTMr8r2Oj3gfsx7AvGwO1CQYzU1ldaI/edit#gid=841946091"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get Department Manager Email').item.json.row_number }}",
+            "Review Assigned": "={{ $('Set Due Date').item.json.Today }}",
+            "Review Due": "={{ $('Set Due Date').item.json.DueDate }}",
+            "Review Status": "Pending"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Birthday",
+              "displayName": "Birthday",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employment Type",
+              "displayName": "Employment Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Review Assigned",
+              "displayName": "Review Assigned",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review Due",
+              "displayName": "Review Due",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review Status",
+              "displayName": "Review Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        688,
+        -16
+      ],
+      "id": "383be4be-73c0-4cdd-a8d2-c5144be529e4",
+      "name": "Set Status as Pending",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IbPMzBQNsPPkCI5L",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "activate",
+        "workflowId": {
+          "__rl": true,
+          "value": "nw98wUUJX3CA30WH",
+          "mode": "list",
+          "cachedResultName": "Performance Review Checking (#nw98wUUJX3CA30WH)"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -16
+      ],
+      "id": "30b88110-0906-4b69-a16f-123c42ec3b71",
+      "name": "Activate Performance Review Checking Workflow",
+      "credentials": {
+        "n8nApi": {
+          "id": "13u8nfOouWrUvNxP",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## **Trigger Explanation**\n\nThis trigger will run automatically **every 6 months** on the **first day of the month** at **10:00 AM**.  \n\nIt ensures the workflow executes twice a year:\n- **January 1st, 10:00 AM**\n- **July 1st, 10:00 AM**\n",
+        "height": 448,
+        "width": 256,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -288
+      ],
+      "id": "d1e3bdac-f222-4db1-b1f2-5fa2f555e829",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "monthsInterval": 6,
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        -16
+      ],
+      "id": "39717ff9-4ade-4516-a8cf-c4610601fc0b",
+      "name": "Trigger Every 6 Months"
+    },
+    {
+      "parameters": {
+        "content": "## **Bi-Annual Performance Review Workflow**\n\n### **Flow Explanation**\n\n1. **Set Due Date**  \n   - Calculates today’s date and the due date (14 days later).\n\n2. **Get Department Manager Email**  \n   - Reads the department manager’s email from the Google Sheets checklist.\n\n3. **Distribute Review Form Through Email**  \n   - Sends an email to the manager with the performance review form link.  \n   - Includes the due date in the message.\n\n4. **Set Status as Pending**  \n   - Updates the Google Sheets checklist to update the assigned date with today’s date, due date, and status set to *Pending*.\n",
+        "height": 640,
+        "width": 800
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -480
+      ],
+      "id": "c77aaeba-119b-42e1-913e-cbfcf4cee8a9",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## **Activate Performance Review Checking Workflow**\n\n### **Flow Explanation**\n\n- **Activate Performance Review Checking Workflow**  \n  This node activates another workflow called **Performance Review Checking**.  \n  It ensures that once the performance review emails are sent and statuses are updated, the review checking process is automatically enabled.\n",
+        "height": 480,
+        "width": 416,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        848,
+        -320
+      ],
+      "id": "c014e94b-b8d7-4fee-b608-c11031f0093f",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Set Due Date": {
+      "main": [
+        [
+          {
+            "node": "Get Department Manager Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Department Manager Email": {
+      "main": [
+        [
+          {
+            "node": "Distribute Review Form Through Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Distribute Review Form Through Email": {
+      "main": [
+        [
+          {
+            "node": "Set Status as Pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Status as Pending": {
+      "main": [
+        [
+          {
+            "node": "Activate Performance Review Checking Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Every 6 Months": {
+      "main": [
+        [
+          {
+            "node": "Set Due Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kuala_Lumpur",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "9bb582a4-6685-43f6-92dd-c8b4e19b8b68",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a13ca25c78e6754780e39395793eb5a747232747cb9eb50496cf3c846d7b5138"
+  },
+  "id": "OYN8NunRgosfcSQH",
+  "tags": [
+    {
+      "updatedAt": "2025-09-04T06:03:09.498Z",
+      "createdAt": "2025-08-20T04:09:57.870Z",
+      "id": "SCZEAO3lLMzK9ddE",
+      "name": "HR & People Operations"
+    }
+  ]
+}
